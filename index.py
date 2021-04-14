@@ -3,7 +3,7 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 
 from app import app
-from apps import dash_f5a, dash_f5b, dash_f6a, dash_f6b, dash_f6c#, dash_f6d
+from apps import dash_f5a, dash_f5b, dash_f6a, dash_f6b, dash_f6c, dash_ncc, dash_ccc#, dash_f6d
 
 
 app.layout = html.Div([
@@ -20,6 +20,7 @@ app.layout = html.Div([
         dcc.Tab(label='Fig 6b', value='tab-6b'),
         dcc.Tab(label='Fig 6c', value='tab-6c'),
         # dcc.Tab(label='Fig 6d', value='tab-6d'),
+        dcc.Tab(label='Fig NCC', value='tab-ncc'),
     ]),
     html.Div(id='tab-fig')
 ])
@@ -71,6 +72,10 @@ def render_content(tab):
     #     return html.Div([
     #         dash_f6d.layout
     #     ])
+    elif tab == 'tab-ncc':
+        return html.Div([
+            dash_ncc.layout
+        ])
 
 if __name__ == '__main__':
     app.run_server(debug=True)

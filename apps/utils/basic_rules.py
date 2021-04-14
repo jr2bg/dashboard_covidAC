@@ -228,9 +228,44 @@ def data_exp(n_habs , d_cont,arr_population):
 
     return d_cont
 
+######
+###   Conteo del número nuevo de personas que ingresaron a otro estado
+######
+def data_number_nstates(sz_r, sz_c, n_habs, d_ncont, arr_population, arr_tiempo):
+    s = 0
+    e = 0
+    i_s = 0
+    q = 0
+    r = 0
+    #print(len(arr_population) * len(arr_population[0]), len(arr_tiempo) * len(arr_tiempo[0]))
+    for i in range(sz_r):
+        for j in range(sz_c):
+            try:
+                if   arr_population[i][j] == 1 and arr_tiempo[i][j] == 0:
+                        s += 1
+                elif arr_population[i][j] == 2 and arr_tiempo[i][j] == 0:
+                    e += 1
+                elif arr_population[i][j] == 3 and arr_tiempo[i][j] == 0:
+                    i_s += 1
+                elif arr_population[i][j] == 4 and arr_tiempo[i][j] == 0:
+                    q += 1
+                elif arr_population[i][j] == 5 and arr_tiempo[i][j] == 0:
+                    r += 1
+            except :
+                print("sz_r: %d\tsz_c: %d"%(sz_r,sz_c))
+                print("Error in row:\t%d\tcolumn:\t%d"%(i,j))
+                print(arr_population[i][j])
+                print(arr_tiempo[i][j])
+    d_ncont["s"].append(s / n_habs)
+    d_ncont["e"].append(e / n_habs)
+    d_ncont["i"].append(i_s / n_habs)
+    d_ncont["q"].append(q / n_habs)
+    d_ncont["r"].append(r / n_habs)
+
+    return d_ncont
 
 ################################
-########################## 
+##########################
 #############              PROBABILIDADES DE TRANSICIÓN
 ##########################
 ################################
@@ -242,7 +277,7 @@ def data_exp(n_habs , d_cont,arr_population):
 def f_p_E(R_0, D, d, t_infeccioso = 10):
     # número de personas que pudieron entrar en contacto con alguien
     n_p = D * ((2 * d + 1 ) **2 -1)
-    
+
     return R_0 / (n_p * t_infeccioso)
 
 
@@ -252,23 +287,23 @@ def f_p_E(R_0, D, d, t_infeccioso = 10):
 # gráfica del artículo de Lauer etal 2020
 # Se calculará al principio
 def f_p_I(s= 0.465, loc = 0, scale = 5.5, fst_q = 0.0001, lst_q = 0.9999):
-    
+
     st = lognorm.ppf(fst_q, s, scale = scale)
     nd = lognorm.ppf(lst_q, s, scale = scale)
-    
+
     x_cont = np.linspace(st,nd,100)
     lognm_pdf = lognorm.pdf(x_cont,s, loc, scale)
-    
-    # convertimos a una lista de enteros con índices los días y 
+
+    # convertimos a una lista de enteros con índices los días y
     # las entradas los valores de la probabilidad
     # prob_days[i] = sum ( lognm_pdf[j] | x_cont[j] = i div) / cont
     prob_days = []
     i = 0
     sm = 0
     cont = 0
-    
+
     for j in range(len(x_cont)):
-        
+
         # función monótona creciente
         if i <= x_cont[j] < i+1:
             sm += lognm_pdf[j]
@@ -278,12 +313,12 @@ def f_p_I(s= 0.465, loc = 0, scale = 5.5, fst_q = 0.0001, lst_q = 0.9999):
             i += 1
             cont = 1
             sm = lognm_pdf[j]
-    
+
     # la última prob se debe anexar al terminar de ejecutarse el código
     prob_days.append(sm / cont)
-    
+
     return prob_days
-    
+
 
 
 ## Probabilidad de recuperación.
