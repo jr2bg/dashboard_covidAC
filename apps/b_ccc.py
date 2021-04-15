@@ -25,7 +25,7 @@ def iterations_ccc(
     PROGRAMA PRINCIPAL
     '''
     d_data={}
-    d_data["% de casos acumulados"] = []
+    d_data["% de casos confirmados acumulados"] = []
     time = []
 
 
@@ -88,15 +88,19 @@ def iterations_ccc(
 
 
     for c in range(1,n_cycles):
-        print(c)
+        #print(c)
         rl.f_evolution(sz_r, sz_c, d_params, arr_tiempo, arr_nt, arr_population, arr_evo)
 
         d_ncont = rl.data_number_nstates(sz_r, sz_c, n_habs , d_ncont, arr_population, arr_tiempo)
 
+        # acumulado es igual a la suma de los anteriores (dado por el anterior)
+        # más el actual
+        d_ncont["q"][-1] += d_ncont["q"][-2]
+
         time.append(c)
 
 
-    d_data["% de casos acumulados"] += d_ncont["q"]
+    d_data["% de casos confirmados acumulados"] += d_ncont["q"]
 
     d_data["t"] = time
 

@@ -21,6 +21,7 @@ app.layout = html.Div([
         dcc.Tab(label='Fig 6c', value='tab-6c'),
         # dcc.Tab(label='Fig 6d', value='tab-6d'),
         dcc.Tab(label='Fig NCC', value='tab-ncc'),
+        dcc.Tab(label='Fig CCC', value='tab-ccc'),
     ]),
     html.Div(id='tab-fig')
 ])
@@ -76,6 +77,11 @@ def render_content(tab):
         return html.Div([
             dash_ncc.layout
         ])
+    elif tab == 'tab-ccc':
+        return html.Div([
+            dash_ccc.layout
+        ])
+
 
 if __name__ == '__main__':
     app.run_server(debug=True)

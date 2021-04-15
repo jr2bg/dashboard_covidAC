@@ -10,7 +10,7 @@ import plotly.express as px
 
 
 ########## ---------- Figura 5 a
-from apps.c_ccc import iterations_ccc
+from apps.b_ccc import iterations_ccc
 
 from app import app
 
@@ -20,7 +20,7 @@ layout = html.Div([
 
     # Título
     html.Div([
-        html.H4("Nuevos casos confirmados")
+        html.H4("Acumulado de casos confirmados")
     ]),
 
 
@@ -456,6 +456,6 @@ def display_values_tot(btn_start,
                I_in,
               )
     print(df.keys())
-    fig = px.scatter(df, x = "t", y = "% de casos acumulados")
+    fig = px.scatter(df, x = "t", y = "% de casos confirmados acumulados")
 
     return fig

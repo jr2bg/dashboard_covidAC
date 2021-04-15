@@ -90,7 +90,7 @@ def iterations_ncc(
 
 
     for c in range(1,n_cycles):
-        print(c)
+        #print(c)
         rl.f_evolution(sz_r, sz_c, d_params, arr_tiempo, arr_nt, arr_population, arr_evo)
 
         d_ncont = rl.data_number_nstates(sz_r, sz_c, n_habs , d_ncont, arr_population, arr_tiempo)
