@@ -65,7 +65,7 @@ def e_2_i(l_p_I, npa, t_I, t):
     return 2
 
 
-def i_2qr(p_Q, f_p_R, npa, t_Q, t_R, t):
+def i_2qr(p_Q, f_p_R, p_dec , npa, t_Q, t_R, t):
     '''
     función que determina si la celda en infectado (3) pasa a
     en cuarentena (4) o a recuperado (5)
@@ -80,13 +80,16 @@ def i_2qr(p_Q, f_p_R, npa, t_Q, t_R, t):
     if t_Q <= t and npa <= p_Q:
         return 4
 
-    if t_R <= t and npa <= f_p_R(t):
-        return 5
+    if t_R <= t:
+        if p_Q < npa <= f_p_R(t):
+            return 5 # recuperado
+        elif p_Q + f_p_R(t) < npa <= p_Q + f_p_R(t) + p_dec:
+            return 6 #fallecido
 
     return 3
 
 
-def q_2_r(f_p_R, npa, t_R, t):
+def q_2_r(f_p_R, p_dec, npa, t_R, t):
     '''
     función que determina si de Q (4) pasa a R (5)
     f_p_R -> función que indica la probabilidad de pasar a R como f(t)
@@ -96,6 +99,8 @@ def q_2_r(f_p_R, npa, t_R, t):
     '''
     if t_R <= t and npa <= f_p_R(t):
         return 5
+    elif t_R <=t and f_p_R(t) < npa <= f_p_R(t) + p_dec:
+        return 6 # fallecido
 
     return 4
 
@@ -129,6 +134,7 @@ def f_evolution(sz_r, sz_c, d_params, arr_tiempo, arr_nt, arr_population, arr_ev
                     p_Q,
                     t_Q,
                     p_R,
+                    p_D,
                     t_R,
                     d,
                     t_L,
@@ -140,7 +146,7 @@ def f_evolution(sz_r, sz_c, d_params, arr_tiempo, arr_nt, arr_population, arr_ev
     cnt = [0 for i in range(6)]
 
     # diccionario para almacenar los cambios de uno a otro
-    d_changes = {2:[], 3:[], 4:[], 5:[]}
+    d_changes = {2:[], 3:[], 4:[], 5:[], 6:[]}
 
     for i in range(sz_r):
         for j in range(sz_c):
@@ -175,7 +181,8 @@ def f_evolution(sz_r, sz_c, d_params, arr_tiempo, arr_nt, arr_population, arr_ev
             # si es infectado
             elif arr_population[i][j] == 3:
                 npa = uniform(0,1)
-                nv = i_2qr(d_params["p_Q"], d_params["p_R"], npa, d_params["t_Q"], d_params["t_R"], arr_tiempo[i][j])
+                p_dec = f_dec_t(d_params["p_D"], arr_tiempo[i][j])
+                nv = i_2qr(d_params["p_Q"], d_params["p_R"], p_dec, npa, d_params["t_Q"], d_params["t_R"], arr_tiempo[i][j])
                 if nv != 3:
                     d_changes[nv].append((i,j))
                 else:
@@ -184,7 +191,8 @@ def f_evolution(sz_r, sz_c, d_params, arr_tiempo, arr_nt, arr_population, arr_ev
             # si está en cuarentena
             elif arr_population[i][j] == 4:
                 npa = uniform(0,1)
-                nv = q_2_r(d_params["p_R"], npa, d_params["t_R"], arr_tiempo[i][j])
+                p_dec = f_dec_t(d_params["p_D"], arr_tiempo[i][j])
+                nv = q_2_r(d_params["p_R"],p_dec, npa, d_params["t_R"], arr_tiempo[i][j])
                 if nv != 4:
                     d_changes[nv].append((i,j))
                 else:
@@ -218,7 +226,7 @@ def data_exp(n_habs , d_cont,arr_population):
                 i += 1
             elif val == 4:
                 q += 1
-            elif val == 5:
+            elif val == 5 or val == 6:
                 r += 1
     d_cont["s"].append(s / n_habs)
     d_cont["e"].append(e / n_habs)
@@ -236,7 +244,8 @@ def data_number_nstates(sz_r, sz_c, n_habs, d_ncont, arr_population, arr_tiempo)
     e = 0
     i_s = 0
     q = 0
-    r = 0
+    r_r = 0
+    r_d = 0
     #print(len(arr_population) * len(arr_population[0]), len(arr_tiempo) * len(arr_tiempo[0]))
     for i in range(sz_r):
         for j in range(sz_c):
@@ -250,7 +259,9 @@ def data_number_nstates(sz_r, sz_c, n_habs, d_ncont, arr_population, arr_tiempo)
                 elif arr_population[i][j] == 4 and arr_tiempo[i][j] == 0:
                     q += 1
                 elif arr_population[i][j] == 5 and arr_tiempo[i][j] == 0:
-                    r += 1
+                    r_r += 1
+                elif arr_population[i][j] == 5 and arr_tiempo[i][j] == 0:
+                    r_d += 1
             except :
                 print("sz_r: %d\tsz_c: %d"%(sz_r,sz_c))
                 print("Error in row:\t%d\tcolumn:\t%d"%(i,j))
@@ -260,7 +271,8 @@ def data_number_nstates(sz_r, sz_c, n_habs, d_ncont, arr_population, arr_tiempo)
     d_ncont["e"].append(e / n_habs)
     d_ncont["i"].append(i_s / n_habs)
     d_ncont["q"].append(q / n_habs)
-    d_ncont["r"].append(r / n_habs)
+    d_ncont["r"].append(r_r / n_habs)
+    d_ncont["d"].append(r_d / n_habs)
 
     return d_ncont
 
@@ -345,3 +357,11 @@ def f_p_R(t):
         return 0.557634
     elif t >= 37:
         return 0.557634
+
+
+## probabilidad del deceso al tiempo t
+def f_dec_t(prob_dec_d, t):
+    '''
+    prob_dec_d -> probabilidad diaria de deceso, o función de distribución
+    '''
+    return prob_dec_d
