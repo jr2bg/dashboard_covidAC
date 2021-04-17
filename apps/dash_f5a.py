@@ -144,7 +144,7 @@ layout = html.Div([
 
         # ######
         # ###### case-fatality ratio (a pesar de no ser constante)
-        html.Div(id="fndc-cfr-output", style={"margin-top":20}),
+        html.Div(id="f5a-cfr-output", style={"margin-top":20}),
         dcc.Slider(
             min=0,
             max=1,

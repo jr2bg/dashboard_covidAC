@@ -6,7 +6,7 @@ from math import inf
 
 ##### Cambia E_in y I_in
 def iterations_5b(
-                   sz_r, 
+                   sz_r,
                    sz_c,
                    d,
                    D,
@@ -16,6 +16,7 @@ def iterations_5b(
                    t_I,
                    p_Q,
                    t_Q,
+                   cfr,
                    t_L,
                    t_R,
                    l_E_int,
@@ -41,7 +42,7 @@ def iterations_5b(
 
     ##### ---------------------- Ciclo sobre l_E_in e l_I_in
     for i in range(len(l_I_int)):
-        
+
         I_int = l_I_int[i]
         E_int = l_E_int[i]
 
@@ -57,6 +58,7 @@ def iterations_5b(
                     "d"   :  d,
                     "t_L" :  t_L,
                     "t"   :  0,
+                    "p_D" :  cfr,
                     "d_variable":d_variable}
 
 
@@ -95,16 +97,16 @@ def iterations_5b(
 
 
         for c in range(1,n_cycles):
-        
+
             rl.f_evolution(sz_r, sz_c, d_params, arr_tiempo, arr_nt, arr_population, arr_evo)
 
             d_cont = rl.data_exp(n_habs , d_cont, arr_population)
 
             time.append(c)
-        
+
         d_data["E_in,I_in"] += [(E_int, I_int) for k in range(n_cycles)]
         d_data["f_infec"] += d_cont["i"]
-    
+
     d_data["t"] = time
-    
+
     return d_data
