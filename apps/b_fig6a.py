@@ -16,6 +16,7 @@ def iterations_6a(
                    t_I,
                    l_p_Q,
                    t_Q,
+                   cfr,
                    t_L,
                    t_R,
                    E_int,
@@ -53,6 +54,7 @@ def iterations_6a(
                     "d"   :  d,
                     "t_L" :  t_L,
                     "t"   :  0,
+                    "p_D" :  cfr,
                     "d_variable":d_variable}
 
 

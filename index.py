@@ -15,9 +15,9 @@ app.layout = html.Div([
         # #dcc.Tab(label='Fig 4', value='tab-4'),
         dcc.Tab(label='Fig 5a', value='tab-5a'),
         dcc.Tab(label='Fig 5b', value='tab-5b'),
-        # # dcc.Tab(label='Fig 5c', value='tab-5c'),
-        # # dcc.Tab(label='Fig 5d', value='tab-5d'),
-        # dcc.Tab(label='Fig 6a', value='tab-6a'),
+        # dcc.Tab(label='Fig 5c', value='tab-5c'),
+        # dcc.Tab(label='Fig 5d', value='tab-5d'),
+        dcc.Tab(label='Fig 6a', value='tab-6a'),
         # dcc.Tab(label='Fig 6b', value='tab-6b'),
         # dcc.Tab(label='Fig 6c', value='tab-6c'),
         # # dcc.Tab(label='Fig 6d', value='tab-6d'),
@@ -51,18 +51,18 @@ def render_content(tab):
         return html.Div([
             dash_f5b.layout
         ])
-    # # elif tab == 'tab-5c':
-    # #     return html.Div([
-    # #         html.H3('Figura 5c')
-    # #     ])
-    # # elif tab == 'tab-5d':
-    # #     return html.Div([
-    # #         html.H3('Figura 5d')
-    # #     ])
-    # elif tab == 'tab-6a':
+    # elif tab == 'tab-5c':
     #     return html.Div([
-    #         dash_f6a.layout
+    #         html.H3('Figura 5c')
     #     ])
+    # elif tab == 'tab-5d':
+    #     return html.Div([
+    #         html.H3('Figura 5d')
+    #     ])
+    elif tab == 'tab-6a':
+        return html.Div([
+            dash_f6a.layout
+        ])
     # elif tab == 'tab-6b':
     #     return html.Div([
     #         dash_f6b.layout
