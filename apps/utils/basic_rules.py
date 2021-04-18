@@ -260,7 +260,7 @@ def data_number_nstates(sz_r, sz_c, n_habs, d_ncont, arr_population, arr_tiempo)
                     q += 1
                 elif arr_population[i][j] == 5 and arr_tiempo[i][j] == 0:
                     r_r += 1
-                elif arr_population[i][j] == 5 and arr_tiempo[i][j] == 0:
+                elif arr_population[i][j] == 6 and arr_tiempo[i][j] == 0:
                     r_d += 1
             except :
                 print("sz_r: %d\tsz_c: %d"%(sz_r,sz_c))
