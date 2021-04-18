@@ -5,7 +5,7 @@ from math import inf
 
 
 #### valores fijos
-def iterations_ndc(
+def iterations_cdc(
                    sz_r,
                    sz_c,
                    d,
@@ -27,7 +27,7 @@ def iterations_ndc(
     '''
     d_data={}
 
-    d_data["% nuevas muertes confirmadas"] = []
+    d_data["% acumulado muertes confirmadas"] = []
     time = []
 
 
@@ -98,10 +98,14 @@ def iterations_ndc(
 
         d_ncont = rl.data_number_nstates(sz_r, sz_c, n_habs , d_ncont, arr_population, arr_tiempo)
 
+        # acumulado es igual a la suma de los anteriores (dado por el anterior)
+        # más el actual
+        d_ncont["d"][-1] += d_ncont["d"][-2]
+
         time.append(c)
 
 
-    d_data["% nuevas muertes confirmadas"] += d_ncont["d"]
+    d_data["% acumulado muertes confirmadas"] += d_ncont["d"]
 
     d_data["t"] = time
 

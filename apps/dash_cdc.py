@@ -7,10 +7,11 @@ from dash.dependencies import Input, Output, State
 
 
 import plotly.express as px
+import plotly.graph_objects as go
 
 
-########## ---------- Figura 5 a
-from apps.b_ccc import iterations_ccc
+########## ---------- Figura nuevas muertes confirmadas por COVID
+from apps.b_cdc import iterations_cdc
 
 from app import app
 
@@ -20,7 +21,7 @@ layout = html.Div([
 
     # Título
     html.Div([
-        html.H4("Acumulado de casos confirmados")
+        html.H4("Acumulado de muertes confirmadas")
     ]),
 
 
@@ -31,7 +32,7 @@ layout = html.Div([
         html.Div([
             ######
             ######  Dimensiones del mapa
-            html.Div(id="fccc-sz-r-output", style={"margin-top":1}),
+            html.Div(id="fcdc-sz-r-output", style={"margin-top":1}),
             dcc.Slider(
                 min=25,
                 max=400,
@@ -42,10 +43,10 @@ layout = html.Div([
                 200: {'label': '200'},
                 400: {'label': '400', 'style': {'color': '#f50'}}
                 },
-                id="fccc-sz-r",
+                id="fcdc-sz-r",
             ),
 
-            html.Div(id="fccc-sz-c-output", style={"margin-top":20}),
+            html.Div(id="fcdc-sz-c-output", style={"margin-top":20}),
             dcc.Slider(
                 min=25,
                 max=400,
@@ -56,14 +57,14 @@ layout = html.Div([
                 200: {'label': '200'},
                 400: {'label': '400', 'style': {'color': '#f50'}}
                 },
-                id="fccc-sz-c",
+                id="fcdc-sz-c",
             ),
 
 
 
             ######
             ###### radio de la esfera de influencia
-            html.Div(id="fccc-d-output", style={"margin-top":20}),
+            html.Div(id="fcdc-d-output", style={"margin-top":20}),
             dcc.Slider(
                 min=0,
                 max=5,
@@ -74,13 +75,13 @@ layout = html.Div([
                 3: {'label': '3'},
                 5: {'label': '5', 'style': {'color': '#f50'}}
                 },
-                id="fccc-d",
+                id="fcdc-d",
             ),
 
 
             ######
             ###### densidad de población
-            html.Div(id="fccc-D-output", style={"margin-top":20}),
+            html.Div(id="fcdc-D-output", style={"margin-top":20}),
             dcc.Slider(
                 min=0,
                 max=1,
@@ -91,13 +92,13 @@ layout = html.Div([
                 0.5: {'label': '0.5'},
                 1: {'label': '1', 'style': {'color': '#f50'}}
                 },
-                id="fccc-D",
+                id="fcdc-D",
             ),
 
 
             ######
             ###### Número de ciclos
-            html.Div(id="fccc-n-cycles-output", style={"margin-top":20}),
+            html.Div(id="fcdc-n-cycles-output", style={"margin-top":20}),
             dcc.Slider(
                 min=0,
                 max=200,
@@ -108,13 +109,13 @@ layout = html.Div([
                 100: {'label': '100'},
                 200: {'label': '200', 'style': {'color': '#f50'}}
                 },
-                id="fccc-n-cycles",
+                id="fcdc-n-cycles",
             ),
 
 
             # ######
             # ###### R_0
-            html.Div(id="fccc-R-0-output", style={"margin-top":20}),
+            html.Div(id="fcdc-R-0-output", style={"margin-top":20}),
             dcc.Slider(
                 min=0.01,
                 max=10,
@@ -125,13 +126,13 @@ layout = html.Div([
                 1.5: {'label': '1.5'},
                 10: {'label': '10', 'style': {'color': '#f50'}}
                 },
-                id="fccc-R-0",
+                id="fcdc-R-0",
             ),
 
 
             # ######
             # ###### t_infec
-            html.Div(id="fccc-t-infec-output", style={"margin-top":20}),
+            html.Div(id="fcdc-t-infec-output", style={"margin-top":20}),
             dcc.Slider(
                 min=0,
                 max=20,
@@ -142,13 +143,12 @@ layout = html.Div([
                 10: {'label': '10'},
                 20: {'label': '20', 'style': {'color': '#f50'}}
                 },
-                id="fccc-t-infec",
+                id="fcdc-t-infec",
             ),
-
 
             # ######
             # ###### case-fatality ratio (a pesar de no ser constante)
-            html.Div(id="fccc-cfr-output", style={"margin-top":20}),
+            html.Div(id="fcdc-cfr-output", style={"margin-top":20}),
             dcc.Slider(
                 min=0,
                 max=1,
@@ -159,7 +159,7 @@ layout = html.Div([
                 0.1: {'label': '0.1'},
                 1: {'label': '1', 'style': {'color': '#f50'}}
                 },
-                id="fccc-cfr",
+                id="fcdc-cfr",
             ),
         ]),
 
@@ -168,7 +168,7 @@ layout = html.Div([
         html.Div([
             # ######
             # ###### t_I
-            html.Div(id="fccc-t-I-output", style={"margin-top":20}),
+            html.Div(id="fcdc-t-I-output", style={"margin-top":20}),
             dcc.Slider(
                 min=0,
                 max=20,
@@ -179,13 +179,13 @@ layout = html.Div([
                 8: {'label': '8'},
                 20: {'label': '20', 'style': {'color': '#f50'}}
                 },
-                id="fccc-t-I",
+                id="fcdc-t-I",
             ),
 
 
             # ######
             # ###### p_Q
-            html.Div(id="fccc-p-Q-output", style={"margin-top":20}),
+            html.Div(id="fcdc-p-Q-output", style={"margin-top":20}),
             dcc.Slider(
                 min=0,
                 max=1,
@@ -196,13 +196,13 @@ layout = html.Div([
                 0.5: {'label': '0.5'},
                 1: {'label': '1', 'style': {'color': '#f50'}}
                 },
-                id="fccc-p-Q",
+                id="fcdc-p-Q",
             ),
 
 
             # ######
             # ###### t_Q
-            html.Div(id="fccc-t-Q-output", style={"margin-top":20}),
+            html.Div(id="fcdc-t-Q-output", style={"margin-top":20}),
             dcc.Slider(
                 min=0,
                 max=21,
@@ -213,13 +213,13 @@ layout = html.Div([
                 15: {'label': '15'},
                 21: {'label': '21', 'style': {'color': '#f50'}}
                 },
-                id="fccc-t-Q",
+                id="fcdc-t-Q",
             ),
 
 
             # ######
             # ###### t_L
-            html.Div(id="fccc-t-L-output", style={"margin-top":20}),
+            html.Div(id="fcdc-t-L-output", style={"margin-top":20}),
             dcc.Slider(
                 min=0,
                 max=21,
@@ -230,13 +230,13 @@ layout = html.Div([
                 15: {'label': '15'},
                 21: {'label': '21', 'style': {'color': '#f50'}}
                 },
-                id="fccc-t-L",
+                id="fcdc-t-L",
             ),
 
 
             # ######
             # ###### t_R
-            html.Div(id="fccc-t-R-output", style={"margin-top":20}),
+            html.Div(id="fcdc-t-R-output", style={"margin-top":20}),
             dcc.Slider(
                 min=0,
                 max=21,
@@ -247,13 +247,13 @@ layout = html.Div([
                 15: {'label': '15'},
                 21: {'label': '21', 'style': {'color': '#f50'}}
                 },
-                id="fccc-t-R",
+                id="fcdc-t-R",
             ),
 
 
             # ######
             # ###### E_in
-            html.Div(id="fccc-E-in-output", style={"margin-top":20}),
+            html.Div(id="fcdc-E-in-output", style={"margin-top":20}),
             dcc.Slider(
                 min=75,
                 max=375,
@@ -264,13 +264,13 @@ layout = html.Div([
                 200: {'label': '200'},
                 375: {'label': '375', 'style': {'color': '#f50'}}
                 },
-                id="fccc-E-in",
+                id="fcdc-E-in",
             ),
 
 
             # ######
             # ###### I_in
-            html.Div(id="fccc-I-in-output", style={"margin-top":20}),
+            html.Div(id="fcdc-I-in-output", style={"margin-top":20}),
             dcc.Slider(
                 min=5,
                 max=25,
@@ -281,7 +281,7 @@ layout = html.Div([
                 6: {'label': '6'},
                 25: {'label': '25', 'style': {'color': '#f50'}}
                 },
-                id="fccc-I-in",
+                id="fcdc-I-in",
             ),
         ])
 
@@ -291,16 +291,16 @@ layout = html.Div([
     ###
     ### Botón de inicio
     ###
-    html.Button("START", id='fccc-button-start', n_clicks=0),
-    html.Div(id="fccc-program-status",style={"margin-top":20}),
+    html.Button("START", id='fcdc-button-start', n_clicks=0),
+    html.Div(id="fcdc-program-status",style={"margin-top":20}),
 
     #############
     #######   GRÁFICA
     ############
     html.Div([
         dcc.Loading(
-            id="fccc-loading-graph",
-            children=html.Div([dcc.Graph(id = 'fig-ccc')]),
+            id="fcdc-loading-graph",
+            children=html.Div([dcc.Graph(id = 'fig-cdc')]),
             type="default"
         )
     ])
@@ -308,126 +308,126 @@ layout = html.Div([
 
 
 
-@app.callback(Output('fccc-sz-r-output','children'),
-             [Input('fccc-sz-r', 'drag_value')])
+@app.callback(Output('fcdc-sz-r-output','children'),
+             [Input('fcdc-sz-r', 'drag_value')])
 def display_value_r(drag_value):
     return "Número de filas: {}".format(drag_value)
 
 
 
-@app.callback(Output('fccc-sz-c-output','children'),
-             [Input('fccc-sz-c', 'drag_value')])
+@app.callback(Output('fcdc-sz-c-output','children'),
+             [Input('fcdc-sz-c', 'drag_value')])
 def display_value_c(drag_value):
     return "Número de columnas: {}".format(drag_value)
 
 
 
-@app.callback(Output('fccc-d-output','children'),
-             [Input('fccc-d', 'drag_value')])
+@app.callback(Output('fcdc-d-output','children'),
+             [Input('fcdc-d', 'drag_value')])
 def display_value_d(drag_value):
     return "Radio de la esfera de influencia: {}".format(drag_value)
 
 
 
-@app.callback(Output('fccc-D-output','children'),
-             [Input('fccc-D', 'drag_value')])
+@app.callback(Output('fcdc-D-output','children'),
+             [Input('fcdc-D', 'drag_value')])
 def display_value_D(drag_value):
     return "Densidad de población: {}".format(drag_value)
 
 
 
-@app.callback(Output('fccc-n-cycles-output','children'),
-             [Input('fccc-n-cycles', 'drag_value')])
+@app.callback(Output('fcdc-n-cycles-output','children'),
+             [Input('fcdc-n-cycles', 'drag_value')])
 def display_value_r(drag_value):
     return "Número de ciclos: {}".format(drag_value)
 
 
 
-@app.callback(Output('fccc-R-0-output','children'),
-             [Input('fccc-R-0', 'drag_value')])
+@app.callback(Output('fcdc-R-0-output','children'),
+             [Input('fcdc-R-0', 'drag_value')])
 def display_value_r(drag_value):
     return "R_0: {}".format(drag_value)
 
 
 
-@app.callback(Output('fccc-t-infec-output','children'),
-             [Input('fccc-t-infec', 'drag_value')])
+@app.callback(Output('fcdc-t-infec-output','children'),
+             [Input('fcdc-t-infec', 'drag_value')])
 def display_value_r(drag_value):
     return "Tiempo que un contagiado puede infectar: {}".format(drag_value)
 
 
-@app.callback(Output('fccc-cfr-output','children'),
-             [Input('fccc-cfr', 'drag_value')])
+@app.callback(Output('fcdc-cfr-output','children'),
+             [Input('fcdc-cfr', 'drag_value')])
 def display_value_r(drag_value):
     return "Case-fatality risk: {}".format(drag_value)
 
 
-@app.callback(Output('fccc-t-I-output','children'),
-             [Input('fccc-t-I', 'drag_value')])
+@app.callback(Output('fcdc-t-I-output','children'),
+             [Input('fcdc-t-I', 'drag_value')])
 def display_value_r(drag_value):
     return "t_I: {}".format(drag_value)
 
 
 
-@app.callback(Output('fccc-p-Q-output','children'),
-             [Input('fccc-p-Q', 'drag_value')])
+@app.callback(Output('fcdc-p-Q-output','children'),
+             [Input('fcdc-p-Q', 'drag_value')])
 def display_value_r(drag_value):
     return "p_Q: {}".format(drag_value)
 
 
 
-@app.callback(Output('fccc-t-Q-output','children'),
-             [Input('fccc-t-Q', 'drag_value')])
+@app.callback(Output('fcdc-t-Q-output','children'),
+             [Input('fcdc-t-Q', 'drag_value')])
 def display_value_r(drag_value):
     return "t_Q: {}".format(drag_value)
 
 
 
-@app.callback(Output('fccc-t-L-output','children'),
-             [Input('fccc-t-L', 'value')])
+@app.callback(Output('fcdc-t-L-output','children'),
+             [Input('fcdc-t-L', 'value')])
 def display_value_r(value):
     return "t_L: {}".format(value)
 
 
 
-@app.callback(Output('fccc-t-R-output','children'),
-             [Input('fccc-t-R', 'drag_value')])
+@app.callback(Output('fcdc-t-R-output','children'),
+             [Input('fcdc-t-R', 'drag_value')])
 def display_value_r(drag_value):
     return "t_R: {}".format(drag_value)
 
 
 
-@app.callback(Output('fccc-E-in-output','children'),
-             [Input('fccc-E-in', 'drag_value')])
+@app.callback(Output('fcdc-E-in-output','children'),
+             [Input('fcdc-E-in', 'drag_value')])
 def display_value_r(drag_value):
     return "E_in: {}".format(drag_value)
 
 
 
-@app.callback(Output('fccc-I-in-output','children'),
-             [Input('fccc-I-in', 'drag_value')])
+@app.callback(Output('fcdc-I-in-output','children'),
+             [Input('fcdc-I-in', 'drag_value')])
 def display_value_r(drag_value):
     return "I_in: {}".format(drag_value)
 
 
 @app.callback(
-     Output("fig-ccc", "figure"),
-    [Input('fccc-button-start', 'n_clicks')],
-    [State('fccc-sz-r','value'),
-     State('fccc-sz-c','value'),
-     State('fccc-d', 'value'),
-     State("fccc-D",'value'),
-     State('fccc-n-cycles','value'),
-     State('fccc-R-0','value'),
-     State('fccc-t-infec','value'),
-     State('fccc-t-I','value'),
-     State('fccc-p-Q','value'),
-     State('fccc-t-Q','value'),
-     State('fccc-cfr','value'),
-     State('fccc-t-L','value'),
-     State('fccc-t-R','value'),
-     State('fccc-E-in','value'),
-     State('fccc-I-in','value'),
+     Output("fig-cdc", "figure"),
+    [Input('fcdc-button-start', 'n_clicks')],
+    [State('fcdc-sz-r','value'),
+     State('fcdc-sz-c','value'),
+     State('fcdc-d', 'value'),
+     State("fcdc-D",'value'),
+     State('fcdc-n-cycles','value'),
+     State('fcdc-R-0','value'),
+     State('fcdc-t-infec','value'),
+     State('fcdc-t-I','value'),
+     State('fcdc-p-Q','value'),
+     State('fcdc-t-Q','value'),
+     State('fcdc-cfr','value'),
+     State('fcdc-t-L','value'),
+     State('fcdc-t-R','value'),
+     State('fcdc-E-in','value'),
+     State('fcdc-I-in','value'),
      ])
 def display_values_tot(btn_start,
                        sz_r,
@@ -446,9 +446,7 @@ def display_values_tot(btn_start,
                        E_in,
                        I_in,
                        ):
-
-    #vals_ent = l_t_L.split(",")
-    #l_t_L = [int(x) for x in vals_ent]
+    # p_D -> probabilidad de deceso
     print("sz_r: %d" %(sz_r))
     print("sz_c: %d" %(sz_c))
     print("d: %d" %(d))
@@ -464,7 +462,7 @@ def display_values_tot(btn_start,
     print("t_R: %d" %(t_R))
     print("E_in: %d" %(E_in))
     print("I_in: %d" %(I_in))
-    df = iterations_ccc(
+    df = iterations_cdc(
                sz_r,
                sz_c,
                d,
@@ -482,6 +480,6 @@ def display_values_tot(btn_start,
                I_in,
               )
     print(df.keys())
-    fig = px.scatter(df, x = "t", y = "% de casos confirmados acumulados")
+    fig = px.scatter(df, x = "t", y = "% acumulado muertes confirmadas")
 
     return fig

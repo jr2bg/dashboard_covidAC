@@ -3,7 +3,7 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 
 from app import app
-from apps import dash_f5a, dash_f5b, dash_f6a, dash_f6b, dash_f6c, dash_ncc, dash_ccc, dash_ndc#, dash_f6d
+from apps import dash_f5a, dash_f5b, dash_f6a, dash_f6b, dash_f6c, dash_ncc, dash_ccc, dash_ndc,  dash_cdc#, dash_f6d
 #from apps import dash_ndc
 
 
@@ -18,12 +18,13 @@ app.layout = html.Div([
         # dcc.Tab(label='Fig 5c', value='tab-5c'),
         # dcc.Tab(label='Fig 5d', value='tab-5d'),
         dcc.Tab(label='Fig 6a', value='tab-6a'),
-        # dcc.Tab(label='Fig 6b', value='tab-6b'),
-        # dcc.Tab(label='Fig 6c', value='tab-6c'),
+        dcc.Tab(label='Fig 6b', value='tab-6b'),
+        dcc.Tab(label='Fig 6c', value='tab-6c'),
         # # dcc.Tab(label='Fig 6d', value='tab-6d'),
-        # dcc.Tab(label='Fig NCC', value='tab-ncc'),
-        # dcc.Tab(label='Fig CCC', value='tab-ccc'),
+        dcc.Tab(label='Fig NCC', value='tab-ncc'),
+        dcc.Tab(label='Fig CCC', value='tab-ccc'),
         dcc.Tab(label='Fig NDC', value='tab-ndc'),
+        dcc.Tab(label='Fig CDC', value='tab-cdc'),
     ]),
     html.Div(id='tab-fig')
 ])
@@ -63,30 +64,33 @@ def render_content(tab):
         return html.Div([
             dash_f6a.layout
         ])
-    # elif tab == 'tab-6b':
-    #     return html.Div([
-    #         dash_f6b.layout
-    #     ])
-    # elif tab == 'tab-6c':
-    #     return html.Div([
-    #         dash_f6c.layout
-    #     ])
+    elif tab == 'tab-6b':
+        return html.Div([
+            dash_f6b.layout
+        ])
+    elif tab == 'tab-6c':
+        return html.Div([
+            dash_f6c.layout
+        ])
     # # elif tab == 'tab-6d':
     # #     return html.Div([
     # #         dash_f6d.layout
     # #     ])
-    # elif tab == 'tab-ncc':
-    #     return html.Div([
-    #         dash_ncc.layout
-    #     ])
-    # elif tab == 'tab-ccc':
-    #     return html.Div([
-    #         dash_ccc.layout
-    #     ])
-    # elif tab == 'tab-ndc':
+    elif tab == 'tab-ncc':
+        return html.Div([
+            dash_ncc.layout
+        ])
+    elif tab == 'tab-ccc':
+        return html.Div([
+            dash_ccc.layout
+        ])
     elif tab == 'tab-ndc':
         return html.Div([
             dash_ndc.layout
+        ])
+    elif tab == 'tab-cdc':
+        return html.Div([
+            dash_cdc.layout
         ])
 
 

@@ -16,6 +16,7 @@ def iterations_ccc(
                    t_I,
                    p_Q,
                    t_Q,
+                   cfr,
                    t_L,
                    t_R,
                    E_int,
@@ -50,6 +51,7 @@ def iterations_ccc(
                 "d"   :  d,
                 "t_L" :  t_L,
                 "t"   :  0,
+                "p_D" :  cfr,
                 "d_variable":d_variable}
 
 
@@ -81,7 +83,8 @@ def iterations_ccc(
               "e": [E_int/n_habs],
               "i":[I_int/n_habs],
               "q": [0],
-              "r": [0]}
+              "r": [0],
+              "d": [0]}
 
     time.append(0)
 

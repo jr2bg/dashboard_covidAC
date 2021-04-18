@@ -144,6 +144,23 @@ layout = html.Div([
                 },
                 id="fncc-t-infec",
             ),
+
+
+            # ######
+            # ###### case-fatality ratio (a pesar de no ser constante)
+            html.Div(id="fncc-cfr-output", style={"margin-top":20}),
+            dcc.Slider(
+                min=0,
+                max=1,
+                step=0.001,
+                value=0.1,
+                marks={
+                0: {'label': '0', 'style': {'color': '#77b0b1'}},
+                0.1: {'label': '0.1'},
+                1: {'label': '1', 'style': {'color': '#f50'}}
+                },
+                id="fncc-cfr",
+            ),
         ]),
 
 
@@ -339,6 +356,11 @@ def display_value_r(drag_value):
     return "Tiempo que un contagiado puede infectar: {}".format(drag_value)
 
 
+@app.callback(Output('fncc-cfr-output','children'),
+             [Input('fncc-cfr', 'drag_value')])
+def display_value_r(drag_value):
+    return "Case-fatality risk: {}".format(drag_value)
+
 
 @app.callback(Output('fncc-t-I-output','children'),
              [Input('fncc-t-I', 'drag_value')])
@@ -401,6 +423,7 @@ def display_value_r(drag_value):
      State('fncc-t-I','value'),
      State('fncc-p-Q','value'),
      State('fncc-t-Q','value'),
+     State('fncc-cfr','value'),
      State('fncc-t-L','value'),
      State('fncc-t-R','value'),
      State('fncc-E-in','value'),
@@ -417,6 +440,7 @@ def display_values_tot(btn_start,
                        t_I,
                        p_Q,
                        t_Q,
+                       cfr,
                        t_L,
                        t_R,
                        E_in,
@@ -435,6 +459,7 @@ def display_values_tot(btn_start,
     print("t_I: %d" %(t_I))
     print("p_Q: %f" %(p_Q))
     print("t_Q: %d" %(t_Q))
+    print("p_D: %d" %(cfr))
     print('t_L: %f' %(t_L))
     print("t_R: %d" %(t_R))
     print("E_in: %d" %(E_in))
@@ -450,6 +475,7 @@ def display_values_tot(btn_start,
                t_I,
                p_Q,
                t_Q,
+               cfr,
                t_L,
                t_R,
                E_in,

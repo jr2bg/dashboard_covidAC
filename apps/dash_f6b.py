@@ -144,6 +144,23 @@ layout = html.Div([
 
 
         # ######
+        # ###### case-fatality ratio (a pesar de no ser constante)
+        html.Div(id="f6b-cfr-output", style={"margin-top":20}),
+        dcc.Slider(
+            min=0,
+            max=1,
+            step=0.001,
+            value=0.1,
+            marks={
+            0: {'label': '0', 'style': {'color': '#77b0b1'}},
+            0.1: {'label': '0.1'},
+            1: {'label': '1', 'style': {'color': '#f50'}}
+            },
+            id="f6b-cfr",
+        ),
+
+
+        # ######
         # ###### t_I
         html.Div(id="f6b-t-I-output", style={"margin-top":20}),
         dcc.Slider(
@@ -326,6 +343,11 @@ def display_value_r(drag_value):
     return "Tiempo que un contagiado puede infectar: {}".format(drag_value)
 
 
+@app.callback(Output('f6b-cfr-output','children'),
+             [Input('f6b-cfr', 'drag_value')])
+def display_value_r(drag_value):
+    return "Case-fatality risk: {}".format(drag_value)
+
 
 @app.callback(Output('f6b-t-I-output','children'),
              [Input('f6b-t-I', 'drag_value')])
@@ -388,6 +410,7 @@ def display_value_r(drag_value):
      State('f6b-t-I','value'),
      State('f6b-p-Q','value'),
      State('f6b-t-Q','value'),
+     State('f6b-cfr','value'),
      State('f6b-t-L','value'),
      State('f6b-t-R','value'),
      State('f6b-E-in','value'),
@@ -404,6 +427,7 @@ def display_values_tot(btn_start,
                        t_I,
                        l_p_Q,
                        t_Q,
+                       cfr,
                        t_L,
                        t_R,
                        E_in,
@@ -422,6 +446,7 @@ def display_values_tot(btn_start,
     print("t_I: %d" %(t_I))
     print("l_p_Q: " + str(l_p_Q)[1:-1])
     print("t_Q: %d" %(t_Q))
+    print("p_D: %d" %(cfr))
     print('t_L: %d' %(t_L))
     print("t_R: %d" %(t_R))
     print("E_in: %d" %(E_in))
@@ -437,6 +462,7 @@ def display_values_tot(btn_start,
                t_I,
                l_p_Q,
                t_Q,
+               cfr,
                t_L,
                t_R,
                E_in,

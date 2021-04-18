@@ -361,6 +361,7 @@ def display_value_r(drag_value):
 def display_value_r(drag_value):
     return "Case-fatality risk: {}".format(drag_value)
 
+
 @app.callback(Output('fndc-t-I-output','children'),
              [Input('fndc-t-I', 'drag_value')])
 def display_value_r(drag_value):
