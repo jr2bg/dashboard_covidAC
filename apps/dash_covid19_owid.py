@@ -6,12 +6,11 @@ import dash_html_components as html
 from dash.dependencies import Input, Output, State
 
 
-#import plotly.express as px
 import plotly.graph_objects as go
 
 
-########## ---------- Figura nuevas muertes confirmadas por COVID
-from apps.b_ndc import iterations_ndc
+########## ---------- Figura 5 a
+from apps.b_covid19owid import iterations_covid19owid
 
 from app import app
 
@@ -21,7 +20,7 @@ layout = html.Div([
 
     # Título
     html.Div([
-        html.H4("Nuevas muertes confirmadas")
+        html.H4("Covid 19 - Our World in Data")
     ]),
 
 
@@ -32,7 +31,7 @@ layout = html.Div([
         html.Div([
             ######
             ######  Dimensiones del mapa
-            html.Div(id="fndc-sz-r-output", style={"margin-top":1}),
+            html.Div(id="fcovid19owid-sz-r-output", style={"margin-top":1}),
             dcc.Slider(
                 min=25,
                 max=400,
@@ -43,10 +42,10 @@ layout = html.Div([
                 200: {'label': '200'},
                 400: {'label': '400', 'style': {'color': '#f50'}}
                 },
-                id="fndc-sz-r",
+                id="fcovid19owid-sz-r",
             ),
 
-            html.Div(id="fndc-sz-c-output", style={"margin-top":20}),
+            html.Div(id="fcovid19owid-sz-c-output", style={"margin-top":20}),
             dcc.Slider(
                 min=25,
                 max=400,
@@ -57,14 +56,14 @@ layout = html.Div([
                 200: {'label': '200'},
                 400: {'label': '400', 'style': {'color': '#f50'}}
                 },
-                id="fndc-sz-c",
+                id="fcovid19owid-sz-c",
             ),
 
 
 
             ######
             ###### radio de la esfera de influencia
-            html.Div(id="fndc-d-output", style={"margin-top":20}),
+            html.Div(id="fcovid19owid-d-output", style={"margin-top":20}),
             dcc.Slider(
                 min=0,
                 max=5,
@@ -75,13 +74,13 @@ layout = html.Div([
                 3: {'label': '3'},
                 5: {'label': '5', 'style': {'color': '#f50'}}
                 },
-                id="fndc-d",
+                id="fcovid19owid-d",
             ),
 
 
             ######
             ###### densidad de población
-            html.Div(id="fndc-D-output", style={"margin-top":20}),
+            html.Div(id="fcovid19owid-D-output", style={"margin-top":20}),
             dcc.Slider(
                 min=0,
                 max=1,
@@ -92,13 +91,13 @@ layout = html.Div([
                 0.5: {'label': '0.5'},
                 1: {'label': '1', 'style': {'color': '#f50'}}
                 },
-                id="fndc-D",
+                id="fcovid19owid-D",
             ),
 
 
             ######
             ###### Número de ciclos
-            html.Div(id="fndc-n-cycles-output", style={"margin-top":20}),
+            html.Div(id="fcovid19owid-n-cycles-output", style={"margin-top":20}),
             dcc.Slider(
                 min=0,
                 max=200,
@@ -109,13 +108,13 @@ layout = html.Div([
                 100: {'label': '100'},
                 200: {'label': '200', 'style': {'color': '#f50'}}
                 },
-                id="fndc-n-cycles",
+                id="fcovid19owid-n-cycles",
             ),
 
 
             # ######
             # ###### R_0
-            html.Div(id="fndc-R-0-output", style={"margin-top":20}),
+            html.Div(id="fcovid19owid-R-0-output", style={"margin-top":20}),
             dcc.Slider(
                 min=0.01,
                 max=10,
@@ -126,13 +125,13 @@ layout = html.Div([
                 1.5: {'label': '1.5'},
                 10: {'label': '10', 'style': {'color': '#f50'}}
                 },
-                id="fndc-R-0",
+                id="fcovid19owid-R-0",
             ),
 
 
             # ######
             # ###### t_infec
-            html.Div(id="fndc-t-infec-output", style={"margin-top":20}),
+            html.Div(id="fcovid19owid-t-infec-output", style={"margin-top":20}),
             dcc.Slider(
                 min=0,
                 max=20,
@@ -143,12 +142,13 @@ layout = html.Div([
                 10: {'label': '10'},
                 20: {'label': '20', 'style': {'color': '#f50'}}
                 },
-                id="fndc-t-infec",
+                id="fcovid19owid-t-infec",
             ),
+
 
             # ######
             # ###### case-fatality ratio (a pesar de no ser constante)
-            html.Div(id="fndc-cfr-output", style={"margin-top":20}),
+            html.Div(id="fcovid19owid-cfr-output", style={"margin-top":20}),
             dcc.Slider(
                 min=0,
                 max=1,
@@ -159,7 +159,7 @@ layout = html.Div([
                 0.1: {'label': '0.1'},
                 1: {'label': '1', 'style': {'color': '#f50'}}
                 },
-                id="fndc-cfr",
+                id="fcovid19owid-cfr",
             ),
         ]),
 
@@ -168,7 +168,7 @@ layout = html.Div([
         html.Div([
             # ######
             # ###### t_I
-            html.Div(id="fndc-t-I-output", style={"margin-top":20}),
+            html.Div(id="fcovid19owid-t-I-output", style={"margin-top":20}),
             dcc.Slider(
                 min=0,
                 max=20,
@@ -179,13 +179,13 @@ layout = html.Div([
                 8: {'label': '8'},
                 20: {'label': '20', 'style': {'color': '#f50'}}
                 },
-                id="fndc-t-I",
+                id="fcovid19owid-t-I",
             ),
 
 
             # ######
             # ###### p_Q
-            html.Div(id="fndc-p-Q-output", style={"margin-top":20}),
+            html.Div(id="fcovid19owid-p-Q-output", style={"margin-top":20}),
             dcc.Slider(
                 min=0,
                 max=1,
@@ -196,13 +196,13 @@ layout = html.Div([
                 0.5: {'label': '0.5'},
                 1: {'label': '1', 'style': {'color': '#f50'}}
                 },
-                id="fndc-p-Q",
+                id="fcovid19owid-p-Q",
             ),
 
 
             # ######
             # ###### t_Q
-            html.Div(id="fndc-t-Q-output", style={"margin-top":20}),
+            html.Div(id="fcovid19owid-t-Q-output", style={"margin-top":20}),
             dcc.Slider(
                 min=0,
                 max=21,
@@ -213,13 +213,13 @@ layout = html.Div([
                 15: {'label': '15'},
                 21: {'label': '21', 'style': {'color': '#f50'}}
                 },
-                id="fndc-t-Q",
+                id="fcovid19owid-t-Q",
             ),
 
 
             # ######
             # ###### t_L
-            html.Div(id="fndc-t-L-output", style={"margin-top":20}),
+            html.Div(id="fcovid19owid-t-L-output", style={"margin-top":20}),
             dcc.Slider(
                 min=0,
                 max=21,
@@ -230,13 +230,13 @@ layout = html.Div([
                 15: {'label': '15'},
                 21: {'label': '21', 'style': {'color': '#f50'}}
                 },
-                id="fndc-t-L",
+                id="fcovid19owid-t-L",
             ),
 
 
             # ######
             # ###### t_R
-            html.Div(id="fndc-t-R-output", style={"margin-top":20}),
+            html.Div(id="fcovid19owid-t-R-output", style={"margin-top":20}),
             dcc.Slider(
                 min=0,
                 max=21,
@@ -247,13 +247,13 @@ layout = html.Div([
                 15: {'label': '15'},
                 21: {'label': '21', 'style': {'color': '#f50'}}
                 },
-                id="fndc-t-R",
+                id="fcovid19owid-t-R",
             ),
 
 
             # ######
             # ###### E_in
-            html.Div(id="fndc-E-in-output", style={"margin-top":20}),
+            html.Div(id="fcovid19owid-E-in-output", style={"margin-top":20}),
             dcc.Slider(
                 min=75,
                 max=375,
@@ -264,13 +264,13 @@ layout = html.Div([
                 200: {'label': '200'},
                 375: {'label': '375', 'style': {'color': '#f50'}}
                 },
-                id="fndc-E-in",
+                id="fcovid19owid-E-in",
             ),
 
 
             # ######
             # ###### I_in
-            html.Div(id="fndc-I-in-output", style={"margin-top":20}),
+            html.Div(id="fcovid19owid-I-in-output", style={"margin-top":20}),
             dcc.Slider(
                 min=5,
                 max=25,
@@ -281,7 +281,7 @@ layout = html.Div([
                 6: {'label': '6'},
                 25: {'label': '25', 'style': {'color': '#f50'}}
                 },
-                id="fndc-I-in",
+                id="fcovid19owid-I-in",
             ),
         ])
 
@@ -291,16 +291,31 @@ layout = html.Div([
     ###
     ### Botón de inicio
     ###
-    html.Button("START", id='fndc-button-start', n_clicks=0),
-    html.Div(id="fndc-program-status",style={"margin-top":20}),
+    html.Button("START", id='fcovid19owid-button-start', n_clicks=0),
+    html.Div(id="fcovid19owid-program-status",style={"margin-top":20}),
 
     #############
     #######   GRÁFICA
     ############
     html.Div([
         dcc.Loading(
-            id="fndc-loading-graph",
-            children=html.Div([dcc.Graph(id = 'fig-ndc')]),
+            id="fncc-covid19owid-loading-graph",
+            children=html.Div([dcc.Graph(id = 'fig-ncc-covid19owid')]),
+            type="default"
+        ),
+        dcc.Loading(
+            id="fccc-covid19owid-loading-graph",
+            children=html.Div([dcc.Graph(id = 'fig-ccc-covid19owid')]),
+            type="default"
+        ),
+        dcc.Loading(
+            id="fndc-covid19owid-loading-graph",
+            children=html.Div([dcc.Graph(id = 'fig-ndc-covid19owid')]),
+            type="default"
+        ),
+        dcc.Loading(
+            id="fcdc-covid19owid-loading-graph",
+            children=html.Div([dcc.Graph(id = 'fig-cdc-covid19owid')]),
             type="default"
         )
     ])
@@ -308,126 +323,129 @@ layout = html.Div([
 
 
 
-@app.callback(Output('fndc-sz-r-output','children'),
-             [Input('fndc-sz-r', 'drag_value')])
+@app.callback(Output('fcovid19owid-sz-r-output','children'),
+             [Input('fcovid19owid-sz-r', 'drag_value')])
 def display_value_r(drag_value):
     return "Número de filas: {}".format(drag_value)
 
 
 
-@app.callback(Output('fndc-sz-c-output','children'),
-             [Input('fndc-sz-c', 'drag_value')])
+@app.callback(Output('fcovid19owid-sz-c-output','children'),
+             [Input('fcovid19owid-sz-c', 'drag_value')])
 def display_value_c(drag_value):
     return "Número de columnas: {}".format(drag_value)
 
 
 
-@app.callback(Output('fndc-d-output','children'),
-             [Input('fndc-d', 'drag_value')])
+@app.callback(Output('fcovid19owid-d-output','children'),
+             [Input('fcovid19owid-d', 'drag_value')])
 def display_value_d(drag_value):
     return "Radio de la esfera de influencia: {}".format(drag_value)
 
 
 
-@app.callback(Output('fndc-D-output','children'),
-             [Input('fndc-D', 'drag_value')])
+@app.callback(Output('fcovid19owid-D-output','children'),
+             [Input('fcovid19owid-D', 'drag_value')])
 def display_value_D(drag_value):
     return "Densidad de población: {}".format(drag_value)
 
 
 
-@app.callback(Output('fndc-n-cycles-output','children'),
-             [Input('fndc-n-cycles', 'drag_value')])
+@app.callback(Output('fcovid19owid-n-cycles-output','children'),
+             [Input('fcovid19owid-n-cycles', 'drag_value')])
 def display_value_r(drag_value):
     return "Número de ciclos: {}".format(drag_value)
 
 
 
-@app.callback(Output('fndc-R-0-output','children'),
-             [Input('fndc-R-0', 'drag_value')])
+@app.callback(Output('fcovid19owid-R-0-output','children'),
+             [Input('fcovid19owid-R-0', 'drag_value')])
 def display_value_r(drag_value):
     return "R_0: {}".format(drag_value)
 
 
 
-@app.callback(Output('fndc-t-infec-output','children'),
-             [Input('fndc-t-infec', 'drag_value')])
+@app.callback(Output('fcovid19owid-t-infec-output','children'),
+             [Input('fcovid19owid-t-infec', 'drag_value')])
 def display_value_r(drag_value):
     return "Tiempo que un contagiado puede infectar: {}".format(drag_value)
 
 
-@app.callback(Output('fndc-cfr-output','children'),
-             [Input('fndc-cfr', 'drag_value')])
+@app.callback(Output('fcovid19owid-cfr-output','children'),
+             [Input('fcovid19owid-cfr', 'drag_value')])
 def display_value_r(drag_value):
     return "Case-fatality risk: {}".format(drag_value)
 
 
-@app.callback(Output('fndc-t-I-output','children'),
-             [Input('fndc-t-I', 'drag_value')])
+@app.callback(Output('fcovid19owid-t-I-output','children'),
+             [Input('fcovid19owid-t-I', 'drag_value')])
 def display_value_r(drag_value):
     return "t_I: {}".format(drag_value)
 
 
 
-@app.callback(Output('fndc-p-Q-output','children'),
-             [Input('fndc-p-Q', 'drag_value')])
+@app.callback(Output('fcovid19owid-p-Q-output','children'),
+             [Input('fcovid19owid-p-Q', 'drag_value')])
 def display_value_r(drag_value):
     return "p_Q: {}".format(drag_value)
 
 
 
-@app.callback(Output('fndc-t-Q-output','children'),
-             [Input('fndc-t-Q', 'drag_value')])
+@app.callback(Output('fcovid19owid-t-Q-output','children'),
+             [Input('fcovid19owid-t-Q', 'drag_value')])
 def display_value_r(drag_value):
     return "t_Q: {}".format(drag_value)
 
 
 
-@app.callback(Output('fndc-t-L-output','children'),
-             [Input('fndc-t-L', 'value')])
+@app.callback(Output('fcovid19owid-t-L-output','children'),
+             [Input('fcovid19owid-t-L', 'value')])
 def display_value_r(value):
     return "t_L: {}".format(value)
 
 
 
-@app.callback(Output('fndc-t-R-output','children'),
-             [Input('fndc-t-R', 'drag_value')])
+@app.callback(Output('fcovid19owid-t-R-output','children'),
+             [Input('fcovid19owid-t-R', 'drag_value')])
 def display_value_r(drag_value):
     return "t_R: {}".format(drag_value)
 
 
 
-@app.callback(Output('fndc-E-in-output','children'),
-             [Input('fndc-E-in', 'drag_value')])
+@app.callback(Output('fcovid19owid-E-in-output','children'),
+             [Input('fcovid19owid-E-in', 'drag_value')])
 def display_value_r(drag_value):
     return "E_in: {}".format(drag_value)
 
 
 
-@app.callback(Output('fndc-I-in-output','children'),
-             [Input('fndc-I-in', 'drag_value')])
+@app.callback(Output('fcovid19owid-I-in-output','children'),
+             [Input('fcovid19owid-I-in', 'drag_value')])
 def display_value_r(drag_value):
     return "I_in: {}".format(drag_value)
 
 
 @app.callback(
-     Output("fig-ndc", "figure"),
-    [Input('fndc-button-start', 'n_clicks')],
-    [State('fndc-sz-r','value'),
-     State('fndc-sz-c','value'),
-     State('fndc-d', 'value'),
-     State("fndc-D",'value'),
-     State('fndc-n-cycles','value'),
-     State('fndc-R-0','value'),
-     State('fndc-t-infec','value'),
-     State('fndc-t-I','value'),
-     State('fndc-p-Q','value'),
-     State('fndc-t-Q','value'),
-     State('fndc-cfr','value'),
-     State('fndc-t-L','value'),
-     State('fndc-t-R','value'),
-     State('fndc-E-in','value'),
-     State('fndc-I-in','value'),
+     [Output("fig-ncc-covid19owid", "figure"),
+     Output("fig-ccc-covid19owid", "figure"),
+     Output("fig-ndc-covid19owid", "figure"),
+     Output("fig-cdc-covid19owid", "figure")],
+    [Input('fcovid19owid-button-start', 'n_clicks')],
+    [State('fcovid19owid-sz-r','value'),
+     State('fcovid19owid-sz-c','value'),
+     State('fcovid19owid-d', 'value'),
+     State("fcovid19owid-D",'value'),
+     State('fcovid19owid-n-cycles','value'),
+     State('fcovid19owid-R-0','value'),
+     State('fcovid19owid-t-infec','value'),
+     State('fcovid19owid-t-I','value'),
+     State('fcovid19owid-p-Q','value'),
+     State('fcovid19owid-t-Q','value'),
+     State('fcovid19owid-cfr','value'),
+     State('fcovid19owid-t-L','value'),
+     State('fcovid19owid-t-R','value'),
+     State('fcovid19owid-E-in','value'),
+     State('fcovid19owid-I-in','value'),
      ])
 def display_values_tot(btn_start,
                        sz_r,
@@ -446,7 +464,9 @@ def display_values_tot(btn_start,
                        E_in,
                        I_in,
                        ):
-    # p_D -> probabilidad de deceso
+
+    #vals_ent = l_t_L.split(",")
+    #l_t_L = [int(x) for x in vals_ent]
     print("sz_r: %d" %(sz_r))
     print("sz_c: %d" %(sz_c))
     print("d: %d" %(d))
@@ -462,7 +482,7 @@ def display_values_tot(btn_start,
     print("t_R: %d" %(t_R))
     print("E_in: %d" %(E_in))
     print("I_in: %d" %(I_in))
-    df = iterations_ndc(
+    df = iterations_covid19owid(
                sz_r,
                sz_c,
                d,
@@ -480,10 +500,38 @@ def display_values_tot(btn_start,
                I_in,
               )
     print(df.keys())
-    fig = go.Figure(data = go.Scatter(x = df["t"],
+    # print(df["% nuevas muertes confirmadas"])
+    # print(df["% acumulado muertes confirmadas"])
+    # print(df["% nuevas muertes confirmadas"] == df["% acumulado muertes confirmadas"])
+
+    # nuevos casos confirmados
+    fig_ncc = go.Figure(data = go.Scatter(x = df["t"],
+                                      y = df["% nuevos casos confirmados"],
+                                      mode="lines+markers"))
+    fig_ncc.update_layout(xaxis_title="t",
+                      yaxis_title="% nuevos casos confirmados")
+
+    # acumulado de casos confirmados
+    fig_ccc = go.Figure(data = go.Scatter(x = df["t"],
+                                      y = df["% de casos confirmados acumulados"],
+                                      mode="lines+markers"))
+    fig_ccc.update_layout(xaxis_title="t",
+                      yaxis_title="% de casos confirmados acumulados")
+
+    # nuevas muertes confirmadas
+    fig_ndc = go.Figure(data = go.Scatter(x = df["t"],
                                       y = df["% nuevas muertes confirmadas"],
-                                      mode = "lines+markers"))
-    fig.update_layout(xaxis_title="t",
+                                      mode="lines+markers"))
+    fig_ndc.update_layout(xaxis_title="t",
                       yaxis_title="% nuevas muertes confirmadas")
 
-    return fig
+    # acumulado miertes confirmadas
+    fig_cdc = go.Figure(data = go.Scatter(x = df["t"],
+                                      y = df["% acumulado muertes confirmadas"],
+                                      mode="lines+markers"))
+    fig_cdc.update_layout(xaxis_title="t",
+                      yaxis_title="% acumulado muertes confirmadas")
+
+
+
+    return fig_ncc, fig_ccc, fig_ndc, fig_cdc

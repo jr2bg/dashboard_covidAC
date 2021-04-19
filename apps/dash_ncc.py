@@ -6,7 +6,7 @@ import dash_html_components as html
 from dash.dependencies import Input, Output, State
 
 
-import plotly.express as px
+import plotly.graph_objects as go
 
 
 ########## ---------- Figura 5 a
@@ -482,6 +482,10 @@ def display_values_tot(btn_start,
                I_in,
               )
     print(df.keys())
-    fig = px.scatter(df, x = "t", y = "% nuevos casos confirmados")
+    fig = go.Figure(data = go.Scatter(x = df["t"],
+                                      y = df["% nuevos casos confirmados"],
+                                      mode="lines+markers"))
+    fig.update_layout(xaxis_title="t",
+                      yaxis_title="% nuevos casos confirmados")
 
     return fig
