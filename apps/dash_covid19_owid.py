@@ -298,26 +298,38 @@ layout = html.Div([
     #######   GRÁFICA
     ############
     html.Div([
-        dcc.Loading(
-            id="fncc-covid19owid-loading-graph",
-            children=html.Div([dcc.Graph(id = 'fig-ncc-covid19owid')]),
-            type="default"
-        ),
-        dcc.Loading(
-            id="fccc-covid19owid-loading-graph",
-            children=html.Div([dcc.Graph(id = 'fig-ccc-covid19owid')]),
-            type="default"
-        ),
-        dcc.Loading(
-            id="fndc-covid19owid-loading-graph",
-            children=html.Div([dcc.Graph(id = 'fig-ndc-covid19owid')]),
-            type="default"
-        ),
-        dcc.Loading(
-            id="fcdc-covid19owid-loading-graph",
-            children=html.Div([dcc.Graph(id = 'fig-cdc-covid19owid')]),
-            type="default"
-        )
+        html.Div([
+            html.Div([
+                dcc.Loading(
+                    id="fncc-covid19owid-loading-graph",
+                    children=html.Div([dcc.Graph(id = 'fig-ncc-covid19owid')]),
+                    type="default"
+                ),
+            ], className= "six columns"),
+            html.Div([
+                dcc.Loading(
+                    id="fccc-covid19owid-loading-graph",
+                    children=html.Div([dcc.Graph(id = 'fig-ccc-covid19owid')]),
+                    type="default"
+                ),
+            ], className="six columns")
+        ], className= "row"),
+        html.Div([
+            html.Div([
+                dcc.Loading(
+                    id="fndc-covid19owid-loading-graph",
+                    children=html.Div([dcc.Graph(id = 'fig-ndc-covid19owid')]),
+                    type="default"
+                ),
+            ], className="six columns"),
+            html.Div([
+                dcc.Loading(
+                    id="fcdc-covid19owid-loading-graph",
+                    children=html.Div([dcc.Graph(id = 'fig-cdc-covid19owid')]),
+                    type="default"
+                )
+            ], className="six columns"),
+        ], className="row")
     ])
 ])
 
@@ -508,28 +520,32 @@ def display_values_tot(btn_start,
     fig_ncc = go.Figure(data = go.Scatter(x = df["t"],
                                       y = df["% nuevos casos confirmados"],
                                       mode="lines+markers"))
-    fig_ncc.update_layout(xaxis_title="t",
+    fig_ncc.update_layout(title = "Nuevos casos confirmados",
+                      xaxis_title="t",
                       yaxis_title="% nuevos casos confirmados")
 
     # acumulado de casos confirmados
     fig_ccc = go.Figure(data = go.Scatter(x = df["t"],
                                       y = df["% de casos confirmados acumulados"],
                                       mode="lines+markers"))
-    fig_ccc.update_layout(xaxis_title="t",
+    fig_ccc.update_layout(title = "Acumulado casos confirmados",
+                      xaxis_title="t",
                       yaxis_title="% de casos confirmados acumulados")
 
     # nuevas muertes confirmadas
     fig_ndc = go.Figure(data = go.Scatter(x = df["t"],
                                       y = df["% nuevas muertes confirmadas"],
                                       mode="lines+markers"))
-    fig_ndc.update_layout(xaxis_title="t",
+    fig_ndc.update_layout(title = "Nuevas muertes confirmadas",
+                      xaxis_title="t",
                       yaxis_title="% nuevas muertes confirmadas")
 
     # acumulado miertes confirmadas
     fig_cdc = go.Figure(data = go.Scatter(x = df["t"],
                                       y = df["% acumulado muertes confirmadas"],
                                       mode="lines+markers"))
-    fig_cdc.update_layout(xaxis_title="t",
+    fig_cdc.update_layout(title = "Acumulado de muertes confirmadas",
+                      xaxis_title="t",
                       yaxis_title="% acumulado muertes confirmadas")
 
 
