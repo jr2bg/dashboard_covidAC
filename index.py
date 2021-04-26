@@ -3,7 +3,8 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 
 from app import app
-from apps import dash_f5a, dash_f5b, dash_f6a, dash_f6b, dash_f6c, dash_ncc, dash_ccc, dash_ndc,  dash_cdc, dash_covid19_owid#, dash_f6d
+from apps import dash_f5a, dash_f5b, dash_f6a, dash_f6b, dash_f6c, dash_ncc
+from apps import dash_ccc, dash_ndc,  dash_cdc, dash_covid19_owid, dash_multDensities #, dash_f6d
 #from apps import dash_ndc
 
 
@@ -26,6 +27,7 @@ app.layout = html.Div([
         dcc.Tab(label='Fig NDC', value='tab-ndc'),
         dcc.Tab(label='Fig CDC', value='tab-cdc'),
         dcc.Tab(label='OWID', value='tab-covid19owid'),
+        dcc.Tab(label='multDensities', value='tab-multDensities'),
     ]),
     html.Div(id='tab-fig')
 ])
@@ -96,6 +98,10 @@ def render_content(tab):
     elif tab == 'tab-covid19owid':
         return html.Div([
             dash_covid19_owid.layout
+        ])
+    elif tab == 'tab-multDensities':
+        return html.Div([
+            dash_multDensities.layout
         ])
 
 

@@ -124,6 +124,50 @@ def f_initPop(sz_r, sz_c, D):
     return arr_population, habs
 
 
+def f_newPop(sz_r, sz_c, arr_population, change_pop):
+    '''
+    función que modificará el arr_population de acuerdo con change_pop
+    change_pop -> int
+    '''
+    # si se agregan nuevos elementos
+    if change_pop > 0:
+        lp2add = []
+        for i in range(sz_r):
+            for j in range(sz_c):
+                # celda vacía
+                if arr_population[i][j] == 0:
+                    lp2add.append((i,j))
+        # condición  para asegurarnos de que se anexará un valor que no sea
+        # mayor que la cantidad de celdas disponibles
+        np2add = min(change_pop, len(lp2add))
+
+        l_n_habs = sample(lp2add, np2add)
+
+        # todos los habitantes son suceptibles en el arreglo de la población
+        for r,c in l_n_habs:
+            arr_population[r][c] = 1
+
+    # se remueven elementos
+    elif change_pop < 0:
+        lp2rm = []
+        for i in range(sz_r):
+            for j in range(sz_c):
+                # celda con una persona en cualquier estado
+                if arr_population[i][j] != 0:
+                    lp2rm.append((i,j))
+        # condición para asegurarnos de que se anexará un valor que no sea
+        # mayor que la cantidad de celdas disponibles
+        np2rm = min(abs(change_pop), len(lp2rm))
+
+        l_n_habs = sample(lp2rm, np2rm)
+
+        # todos los habitantes en l_n_habs serán convertidos a celdas vacías
+        for r,c in l_n_habs:
+            arr_population[r][c] = 0
+
+
+
+
 def f_evolution(sz_r, sz_c, d_params, arr_tiempo, arr_nt, arr_population, arr_evo):
     '''
     función de evolución, cambia los array
