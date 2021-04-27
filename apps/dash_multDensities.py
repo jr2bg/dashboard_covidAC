@@ -7,6 +7,9 @@ from dash.dependencies import Input, Output, State
 
 
 import plotly.graph_objects as go
+import plotly.express as px
+
+import xarray as xr
 
 
 ########## ---------- multiples densidades
@@ -283,10 +286,14 @@ layout = html.Div([
     html.Div(id="fmultDensities-program-status",style={"margin-top":20}),
 
     #############
-    #######   Video
+    #######   Animación
     ############
     html.Div([
-        html.Video(src="/static/evolucion_COVID_0.mp4",controls=True)
+        dcc.Loading(
+            id="anim-multDensities-loading-graph",
+            children=html.Div([dcc.Graph(id="anim-multDensities")]),
+            type="default"
+        )
     ]),
 
     #############
@@ -436,7 +443,8 @@ def display_value_r(drag_value):
      [Output("fig-ncc-multDensities", "figure"),
      Output("fig-ccc-multDensities", "figure"),
      Output("fig-ndc-multDensities", "figure"),
-     Output("fig-cdc-multDensities", "figure")],
+     Output("fig-cdc-multDensities", "figure"),
+     Output("anim-multDensities", "figure")],
     [Input('fmultDensities-button-start', 'n_clicks')],
     [State('fmultDensities-sz-r','value'),
      State('fmultDensities-sz-c','value'),
@@ -494,23 +502,23 @@ def display_values_tot(btn_start,
     print("t_R: %d" %(t_R))
     print("E_in: %d" %(E_in))
     print("I_in: %d" %(I_in))
-    df = iterations_multDensities(
-               sz_r,
-               sz_c,
-               d,
-               l_D,
-               l_n_cycles,
-               R_0,
-               t_infec,
-               t_I,
-               p_Q,
-               t_Q,
-               cfr,
-               t_L,
-               t_R,
-               E_in,
-               I_in,
-              )
+    df, l_frames= iterations_multDensities(
+                                           sz_r,
+                                           sz_c,
+                                           d,
+                                           l_D,
+                                           l_n_cycles,
+                                           R_0,
+                                           t_infec,
+                                           t_I,
+                                           p_Q,
+                                           t_Q,
+                                           cfr,
+                                           t_L,
+                                           t_R,
+                                           E_in,
+                                           I_in,
+                                          )
     print(df.keys())
     # print(df["% nuevas muertes confirmadas"])
     # print(df["% acumulado muertes confirmadas"])
@@ -548,6 +556,21 @@ def display_values_tot(btn_start,
                       xaxis_title="t",
                       yaxis_title="% acumulado muertes confirmadas")
 
+    # frames para la animación
+    frames = xr.DataArray(l_frames,
+                          dims=("tiempo", "row", "col"),
+                          coords={"tiempo":df["t"]}
+                          )
 
+    fig_animation=px.imshow(frames,
+                            animation_frame="tiempo",
+                            #labels={"x":None, "y":None, "color":None},
+                            range_color=[0,5],
+                            #width=1400,
+                            height=800,
+                            aspect="equal",
+                            #x=None,
+                            #y=None
+                            )
 
-    return fig_ncc, fig_ccc, fig_ndc, fig_cdc
+    return fig_ncc, fig_ccc, fig_ndc, fig_cdc, fig_animation

@@ -3,6 +3,12 @@ import apps.utils.basic_rules as rl
 
 from math import inf
 
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+from matplotlib.colors import ListedColormap
+
+from copy import deepcopy
+
 
 #### valores fijos
 def iterations_multDensities(
@@ -70,6 +76,11 @@ def iterations_multDensities(
     pop_i0 = habs[:I_int]
     pop_e0 = habs[I_int: E_int + I_int]
 
+    #### ANIMACION
+    #cmap = ListedColormap(["black", "blue", "green", "red", "cyan", "yellow"])
+    #fig = plt.figure(dpi = 200, tight_layout = False, constrained_layout = True)
+    l_frames = []
+
 
 
     for r,c in pop_i0:
@@ -93,12 +104,20 @@ def iterations_multDensities(
               "d": [0]}
 
     time.append(0)
+    #plt.axis('off')
+    #img = plt.imshow(arr_population, vmin = 0, vmax = 5, cmap = cmap)
+    l_frames.append(deepcopy(arr_population))
+    # frame cero
 
 
     # 1er ciclo
     for c in range(1,l_n_cycles[0]):
         #print(c)
         rl.f_evolution(sz_r, sz_c, d_params, arr_tiempo, arr_nt, arr_population, arr_evo)
+
+        # plt.axis('off')
+        # img = plt.imshow(arr_population, vmin = 0, vmax = 5, cmap = cmap)
+        l_frames.append(deepcopy(arr_population))
 
         d_ncont = rl.data_number_nstates(sz_r, sz_c, n_habs , d_ncont, arr_population, arr_tiempo)
 
@@ -116,6 +135,10 @@ def iterations_multDensities(
         #print(c)
         rl.f_evolution(sz_r, sz_c, d_params, arr_tiempo, arr_nt, arr_population, arr_evo)
 
+        # plt.axis('off')
+        # img = plt.imshow(arr_population, vmin = 0, vmax = 5, cmap = cmap)
+        l_frames.append(deepcopy(arr_population))
+
         d_ncont = rl.data_number_nstates(sz_r, sz_c, n_habs , d_ncont, arr_population, arr_tiempo)
 
         time.append(c)
@@ -131,12 +154,23 @@ def iterations_multDensities(
 
         rl.f_evolution(sz_r, sz_c, d_params, arr_tiempo, arr_nt, arr_population, arr_evo)
 
+        # plt.axis('off')
+        # img = plt.imshow(arr_population, vmin = 0, vmax = 5, cmap = cmap)
+        l_frames.append(deepcopy(arr_population))
+
         d_ncont = rl.data_number_nstates(sz_r, sz_c, n_habs , d_ncont, arr_population, arr_tiempo)
 
         time.append(c)
 
+    #######################################                                VIDEO
+        # # generar la animación
+    # ani = animation.ArtistAnimation(fig, l_frames, interval=100, blit=True,
+    #                                 repeat_delay=1000)
+    # Writer = animation.writers['ffmpeg']
+    # writer = Writer(fps=15, metadata=dict(artist='Me'), bitrate=1800)
+    # ani.save("static/video_test.mp4", writer = writer)
 
-    ########################################
+    ########################################        DATOS A PASAR A LAS GRÁFICAS
     print("tamanio tiempo:\t",len(time))
     # acumulados, hacer copia por que las listas "son punteros"
     d_ncont["cq"] = d_ncont["q"].copy()
@@ -154,4 +188,4 @@ def iterations_multDensities(
 
     d_data["t"] = time
 
-    return d_data
+    return d_data, l_frames
