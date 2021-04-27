@@ -283,6 +283,13 @@ layout = html.Div([
     html.Div(id="fmultDensities-program-status",style={"margin-top":20}),
 
     #############
+    #######   Video
+    ############
+    html.Div([
+        html.Video(src="/static/evolucion_COVID_0.mp4",controls=True)
+    ]),
+
+    #############
     #######   GRÁFICA
     ############
     html.Div([
