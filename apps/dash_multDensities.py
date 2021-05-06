@@ -9,6 +9,7 @@ from dash.dependencies import Input, Output, State
 import plotly.graph_objects as go
 import plotly.express as px
 
+import numpy as np
 import xarray as xr
 
 
@@ -556,19 +557,43 @@ def display_values_tot(btn_start,
                       xaxis_title="t",
                       yaxis_title="% acumulado muertes confirmadas")
 
-    # frames para la animación
-    frames = xr.DataArray(l_frames,
-                          dims=("tiempo", "row", "col"),
-                          coords={"tiempo":df["t"]}
-                          )
+    # # frames para la animación con xarray
+    # frames = xr.DataArray(l_frames,
+    #                       dims=("tiempo", "row", "col"),
+    #                       coords={"tiempo":df["t"]}
+    #                       )
+    #
+    # fig_animation=px.imshow(frames,
+    #                         animation_frame="tiempo",
+    #                         #labels={"x":None, "y":None, "color":None},
+    #                         range_color=[0,5],
+    #                         #width=1400,
+    #                         height=800,
+    #                         aspect="equal",
+    #                         title="Espacio fase"
+    #                         #x=None,
+    #                         #y=None
+    #                         )
 
-    fig_animation=px.imshow(frames,
-                            animation_frame="tiempo",
-                            #labels={"x":None, "y":None, "color":None},
+    # frames para la animación con una lista
+
+    fig_animation=px.imshow(np.array(l_frames),
+                            animation_frame=0,
+                            labels={"x":None, "y":None, "color":None},
                             range_color=[0,5],
                             #width=1400,
                             height=800,
                             aspect="equal",
+                            title="Espacio fase",
+                            color_continuous_scale=[
+                                                    #"#ffffff",
+                                                    "#262a2a",
+                                                    "#15ff00",
+                                                    "#94ff00",
+                                                    "#ffeb00",
+                                                    "#ff6b00",
+                                                    "#ff0014"
+                            ]
                             #x=None,
                             #y=None
                             )
