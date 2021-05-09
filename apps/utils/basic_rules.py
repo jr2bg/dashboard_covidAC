@@ -4,6 +4,8 @@ from random import randint, uniform, sample
 import numpy as np
 from scipy.stats import lognorm
 
+from copy import deepcopy
+
 def f_getNeigh(sz_r, sz_c,r,c,d, d_variable = True):
     '''
     función que da la vecindad para el elemento ubicado en
@@ -32,7 +34,8 @@ def s_2_e(p_E, npa, ng, arr_population):
     para ello, la celda debe ser suceptible
     Se requiere la vecindad, y la probabilidad de pasar a E
     así como la población arr_population
-    también se requiere de un número pseudo-aleatorio npa, para determinar si pasa o no a E
+    también se requiere de un número pseudo-aleatorio npa, para determinar si
+    pasa o no a E
     '''
     cnt = 0
     for r,c in ng:
@@ -65,12 +68,12 @@ def e_2_i(l_p_I, npa, t_I, t):
     return 2
 
 
-def i_2qr(p_Q, f_p_R, p_dec , npa, t_Q, t_R, t):
+def i_2qr(p_Q, ff_p_R, p_dec , npa, t_Q, t_R, t):
     '''
     función que determina si la celda en infectado (3) pasa a
     en cuarentena (4) o a recuperado (5)
     p_Q -> probabilidad de pasar a en cuarentena
-    f_p_R -> función que indica la probabilidad de pasar a R como f(t)
+    ff_p_R -> función que indica la probabilidad de pasar a R como f(t)
     npa -> número pseudo aleatorio
     t_Q -> tiempo mínimo para entrar a Q
     t_R -> tiempo mínimo para entrar a recuperado
@@ -81,9 +84,9 @@ def i_2qr(p_Q, f_p_R, p_dec , npa, t_Q, t_R, t):
         return 4
 
     if t_R <= t:
-        if p_Q < npa <= f_p_R(t):
+        if p_Q < npa <= ff_p_R(t):
             return 5 # recuperado
-        elif p_Q + f_p_R(t) < npa <= p_Q + f_p_R(t) + p_dec:
+        elif p_Q + ff_p_R(t) < npa <= p_Q + ff_p_R(t) + p_dec:
             return 6 #fallecido
 
     return 3
@@ -183,7 +186,8 @@ def f_evolution(sz_r, sz_c, d_params, arr_tiempo, arr_nt, arr_population, arr_ev
                     d,
                     t_L,
                     t,
-                    d_variable
+                    d_variable,
+                    step            **opcional
 
     '''
     d_params["t"] += 1
@@ -226,7 +230,13 @@ def f_evolution(sz_r, sz_c, d_params, arr_tiempo, arr_nt, arr_population, arr_ev
             elif arr_population[i][j] == 3:
                 npa = uniform(0,1)
                 p_dec = f_dec_t(d_params["p_D"], arr_tiempo[i][j])
-                nv = i_2qr(d_params["p_Q"], d_params["p_R"], p_dec, npa, d_params["t_Q"], d_params["t_R"], arr_tiempo[i][j])
+                # if "step" in d_params.keys():
+                #     nv = i_2qr(d_params["p_Q"], d_params["p_R"], p_dec, npa,
+                #                 d_params["t_Q"], d_params["t_R"],
+                #                 arr_tiempo[i][j], step = d_params["step"])
+                # else:
+                nv = i_2qr(d_params["p_Q"], d_params["p_R"], p_dec, npa,
+                            d_params["t_Q"], d_params["t_R"], arr_tiempo[i][j])
                 if nv != 3:
                     d_changes[nv].append((i,j))
                 else:
@@ -236,7 +246,12 @@ def f_evolution(sz_r, sz_c, d_params, arr_tiempo, arr_nt, arr_population, arr_ev
             elif arr_population[i][j] == 4:
                 npa = uniform(0,1)
                 p_dec = f_dec_t(d_params["p_D"], arr_tiempo[i][j])
-                nv = q_2_r(d_params["p_R"],p_dec, npa, d_params["t_R"], arr_tiempo[i][j])
+                # if "step" in d_params.keys():
+                #     nv = q_2_r(d_params["p_R"],p_dec, npa, d_params["t_R"],
+                #                 arr_tiempo[i][j], step = d_params["step"])
+                # else:
+                nv = q_2_r(d_params["p_R"],p_dec, npa, d_params["t_R"],
+                            arr_tiempo[i][j])
                 if nv != 4:
                     d_changes[nv].append((i,j))
                 else:
@@ -342,18 +357,30 @@ def f_p_E(R_0, D, d, t_infeccioso = 10):
 # consideraremos los siguientes valores obtenidos de tratar de reproducir la
 # gráfica del artículo de Lauer etal 2020
 # Se calculará al principio
-def f_p_I(s= 0.465, loc = 0, scale = 5.5, fst_q = 0.0001, lst_q = 0.9999):
+def f_p_I(s= 0.465, loc = 0, scale = 5.5, fst_q = 0.0001, lst_q = 0.9999 ,step = 1):
+    '''
+    s -> escala
+    loc -> ubicación del origen
+    scale -> ???
+    fst_q -> 1er cuantil
+    lst_q -> último cuantil
+    step  -> tamaño del paso (en días)
+    '''
 
+    # start
     st = lognorm.ppf(fst_q, s, scale = scale)
+    # end
     nd = lognorm.ppf(lst_q, s, scale = scale)
 
+    # np array con 100 entradas que van desde st hasta nd
     x_cont = np.linspace(st,nd,100)
+    # pdf de la función lognormal con los parámetros especificados
     lognm_pdf = lognorm.pdf(x_cont,s, loc, scale)
 
     # convertimos a una lista de enteros con índices los días y
     # las entradas los valores de la probabilidad
-    # prob_days[i] = sum ( lognm_pdf[j] | x_cont[j] = i div) / cont
-    prob_days = []
+    # prob_step[i] = sum ( lognm_pdf[j] | x_cont[j] = i div) / cont
+    prob_step = []
     i = 0
     sm = 0
     cont = 0
@@ -361,19 +388,20 @@ def f_p_I(s= 0.465, loc = 0, scale = 5.5, fst_q = 0.0001, lst_q = 0.9999):
     for j in range(len(x_cont)):
 
         # función monótona creciente
-        if i <= x_cont[j] < i+1:
+        if i <= x_cont[j] < i + step:
             sm += lognm_pdf[j]
             cont += 1
         else:
-            prob_days.append(sm / cont)
-            i += 1
+            if i == 0: cont = 1;
+            prob_step.append(sm / cont)
+            i += step
             cont = 1
             sm = lognm_pdf[j]
 
     # la última prob se debe anexar al terminar de ejecutarse el código
-    prob_days.append(sm / cont)
+    prob_step.append(sm / cont)
 
-    return prob_days
+    return prob_step
 
 
 
@@ -409,3 +437,476 @@ def f_dec_t(prob_dec_d, t):
     prob_dec_d -> probabilidad diaria de deceso, o función de distribución
     '''
     return prob_dec_d
+
+
+##### función para los estados de los habitantes de acuerdo a las probs
+def f_habs_act_stat(
+                    arr_habs,
+                    habs,
+                    arr_tiempo,
+                    env_p_S,
+                    env_p_E,
+                    env_p_I,
+                    env_p_Q,
+                    env_p_R
+                    ):
+    '''
+    Función para determinar los estados de los habitantes en determinada zona
+    Al arr_habs ser un array, no es necesario retornar nada
+    arr_tiempo -> array que
+    env_p -> (casa|trans|work)
+    '''
+
+    h_E = int(env_p_E * len(habs))
+    h_I = int(env_p_I * len(habs))
+    h_Q = int(env_p_Q * len(habs))
+    h_R = int(env_p_R * len(habs))
+
+    for i in range(len(habs)):
+        r, c = habs[i]
+        arr_tiempo[r][c] = 1
+
+        if i < h_E:
+            arr_habs[r][c] = 2                # expuesto
+        elif i < h_E + h_I:
+            arr_habs[r][c] = 3                # infectado
+        elif i < h_E + h_I + h_Q:
+            arr_habs[r][c] = 4                # cuarentena
+        elif i < h_E + h_I + h_Q + h_R:
+            arr_habs[r][c] = 5                # removido
+        else:
+            arr_habs[r][c] = 1                # suceptible
+
+
+
+
+def f_habs_stat_N_center(
+                    sz_r,
+                    sz_c,
+                    arr_habs,
+                    habs,
+                    env_p_S,
+                    env_p_E,
+                    env_p_I,
+                    env_p_Q,
+                    env_p_R,
+                    stat_cent,
+                    time_cent
+                    ):
+    '''
+    Función para determinar los estados de los habitantes en determinada zona
+    y cambiar el estado del centro
+    Al arr_habs ser un array, no es necesario retornar nada
+    env_p -> (casa|trans|work)
+    '''
+
+    arr_tiempo = [[0 for i in range(sz_c)] for j in range(sz_r)]
+    # consideramos que se van poblando los habitantes con cierta probabilidad
+    # para los estados
+    f_habs_act_stat(arr_habs, habs, arr_tiempo, env_p_S, env_p_E, env_p_I, env_p_Q, env_p_R)
+
+    # si el cuadrito central NO está ocupado, lo ocupamos
+    cnt_r = sz_r // 2
+    cnt_c = sz_c // 2
+
+    if arr_habs[cnt_r][cnt_c] == 0:
+
+        # quitamos un elemento de la lista de posiciones de las personas
+        r_rem, c_rem = habs.pop()
+        arr_habs[r_rem][c_rem] = 0
+
+        habs.append((cnt_r, cnt_c))
+
+    # poblamos con una persona con estado stat_cent
+    arr_habs[cnt_r][cnt_c] = stat_cent
+    arr_tiempo[cnt_r][cnt_c] = stat_cent
+    return arr_tiempo
+
+
+#########################
+#########  Función para la generación de la población en cualquier entorno
+######
+def f_init_env(
+                sz_r,
+                sz_c,
+                env_D,
+                env_p_S,
+                env_p_E,
+                env_p_I,
+                env_p_Q,
+                env_p_R,
+                stat_cent = 1,
+                time_cent = 0
+                ):
+    '''
+    función para inicializar cualquier entorno
+    '''
+    arr_population, habs = f_initPop(sz_r, sz_c, env_D)
+    arr_tiempo = f_habs_stat_N_center(
+                        sz_r,
+                        sz_c,
+                        arr_population,
+                        habs,
+                        env_p_S,
+                        env_p_E,
+                        env_p_I,
+                        env_p_Q,
+                        env_p_R,
+                        stat_cent,
+                        time_cent
+                        )
+    return arr_population, habs, arr_tiempo
+
+
+# ##### función de la inicialización de la población para la casa
+# def f_initCasa(sz_r, sz_c, casa_D, casa_S, casa_E, casa_I, casa_Q, casa_R):
+#     '''
+#     función para inicializar la población en la casa
+#     '''
+#     # usamos lo que teníamos previamente
+#     arr_population, habs = f_initPop(sz_r, sz_c, casa_D)
+#
+#     # # consideramos que se van poblando los habitantes con cierta probabilidad
+#     # # para los estados
+#     # f_habs_act_stat(arr_population, habs, casa_S, casa_E, casa_I, casa_Q, casa_R)
+#     #
+#     # # si el cuadrito central NO está ocupado, lo ocupamos
+#     # cnt_r = sz_r // 2
+#     # cnt_c = sz_c // 2
+#     #
+#     # if arr_population[cnt_r][cnt_c] == 0:
+#     #     # poblamos con una persona SUCEPTIBLE
+#     #     arr_population[cnt_r][cnt_c] = 1
+#     #     # quitamos un elemento de la lista de posiciones de las personas
+#     #     r_rem, c_rem = habs.pop()
+#     #     arr_population[r_rem][c_rem] = 0
+#     #
+#     #     habs.append((cnt_r, cnt_c))
+#     #
+#     f_habs_stat_N_center(
+#                         sz_r,
+#                         sz_c,
+#                         arr_population,
+#                         habs,
+#                         casa_S,
+#                         casa_E,
+#                         casa_I,
+#                         casa_Q,
+#                         casa_R
+#                         )
+#     return arr_population, habs
+#
+#
+#
+# ##### función de la inicialización de la población para el transporte
+# def f_initTrans(sz_r, sz_c, trans_D,trans_S, trans_E, trans_I, trans_Q, trans_R, stat_cent):
+#     '''
+#     función para inicializar la población en el transporte
+#
+#     stat_cent -> estado del centro
+#     '''
+#     # usamos lo que teníamos previamente
+#     arr_population, habs = f_initPop(sz_r, sz_c, trans_D)
+#
+#     # # consideramos que se van poblando los habitantes con cierta probabilidad
+#     # # para los estados
+#     # f_habs_act_stat(arr_population, habs, trans_S, trans_E, trans_I, trans_Q, trans_R)
+#     #
+#     # # si el cuadrito central NO está ocupado, lo ocupamos
+#     # cnt_r = sz_r // 2
+#     # cnt_c = sz_c // 2
+#     #
+#     # if arr_population[cnt_r][cnt_c] == 0:
+#     #     # poblamos con una persona con estado stat_cent
+#     #     # quitamos un elemento de la lista de posiciones de las personas
+#     #     r_rem, c_rem = habs.pop()
+#     #     arr_population[r_rem][c_rem] = 0
+#     #
+#     #     habs.append((cnt_r, cnt_c))
+#     #
+#     # # si hay una persona ahí, solo le cambiamos el estado
+#     # arr_population[cnt_r][cnt_c] = stat_cent
+#
+#     f_habs_stat_N_center(
+#                         sz_r,
+#                         sz_c,
+#                         arr_population,
+#                         habs,
+#                         trans_S,
+#                         trans_E,
+#                         trans_I,
+#                         trans_Q,
+#                         trans_R,
+#                         stat_cent
+#                         )
+#     return arr_population, habs
+#
+#
+#
+#
+# ##### función de la inicialización de la población para el trabajo
+# def f_initWork(sz_r, sz_c, work_D, work_S, work_E, work_I, work_Q, work_R, stat_cent):
+#     '''
+#     función para inicializar la población en el transporte
+#
+#     stat_cent -> estado del centro
+#     '''
+#     # usamos lo que teníamos previamente
+#     arr_population, habs = f_initPop(sz_r, sz_c, trans_D)
+#
+#     # consideramos que se van poblando los habitantes con cierta probabilidad
+#     # para los estados
+#     f_habs_act_stat(arr_population, habs, work_S, work_E, work_I, work_Q, work_R)
+#
+#
+#     # si el cuadrito central NO está ocupado, lo ocupamos
+#     cnt_r = sz_r // 2
+#     cnt_c = sz_c // 2
+#
+#     if arr_population[cnt_r][cnt_c] == 0:
+#         # poblamos con una persona con estado stat_cent
+#         # quitamos un elemento de la lista de posiciones de las personas
+#         r_rem, c_rem = habs.pop()
+#         arr_population[r_rem][c_rem] = 0
+#
+#         habs.append((cnt_r, cnt_c))
+#
+#     # si hay una persona ahí, solo le cambiamos el estado
+#     arr_population[cnt_r][cnt_c] = stat_cent
+#
+#     return arr_population, habs
+
+
+
+
+def f_sum_d_data(d_ncont_hour, arr_population, habs, arr_tiempo,
+                 s_env):
+    '''
+    casi copia de data_number_nstates
+
+    función para hacer la suma de la info de d_data
+    consideraremos que d_ncont tiene la siguiente forma al inicio:
+
+    d_ncont_hour = {"s": 0,
+               "e": 0,
+               "i": 0,
+               "q": 0,
+               "r": 0,
+               "d": 0}
+    s_env -> string del ambiente en el que se encuentra (DEBUGGIN)
+    '''
+    s = 0
+    e = 0
+    i_s = 0
+    q = 0
+    r_r = 0
+    r_d = 0
+
+    n_habs = len(habs)
+
+    for r,c in habs:
+
+        if   arr_population[r][c] == 1 and arr_tiempo[r][c] == 0:
+            s += 1
+        elif arr_population[r][c] == 2 and arr_tiempo[r][c] == 0:
+            e += 1
+        elif arr_population[r][c] == 3 and arr_tiempo[r][c] == 0:
+            i_s += 1
+        elif arr_population[r][c] == 4 and arr_tiempo[r][c] == 0:
+            q += 1
+        elif arr_population[r][c] == 5 and arr_tiempo[r][c] == 0:
+            r_r += 1
+        elif arr_population[r][c] == 6 and arr_tiempo[r][c] == 0:
+            r_d += 1
+
+        # else:
+        #     raise Exception("Casilla (%d, %d) ocupada por estado %d con tiempo %d en %s" % (r,c, arr_population[r][c], arr_tiempo[r][c], s_env))
+
+
+    d_ncont_hour["s"] += (s / n_habs)
+    d_ncont_hour["e"] += (e / n_habs)
+    d_ncont_hour["i"] += (i_s / n_habs)
+    d_ncont_hour["q"] += (q / n_habs)
+    d_ncont_hour["r"] += (r_r / n_habs)
+    d_ncont_hour["d"] += (r_d / n_habs)
+
+    return d_ncont_hour
+
+
+
+
+###### función de un día
+def f_one_day_24h(
+                   sz_r,
+                   sz_c,
+                   d_params,
+                   arr_tiempo,
+                   arr_nt,
+                   arr_casa,
+                   arr_work,
+                   arr_evo,
+                   casa_ps,
+                   trans_ps,
+                   work_ps,
+                   l_frames
+                  ):
+    '''
+    similar a f_evolution
+    Consideraremos que en un día hay 24 hrs
+    d_params -> diccionario que contendrá la información de:
+                    p_E,
+                    p_I,
+                    t_I,
+                    p_Q,
+                    t_Q,
+                    p_R,
+                    p_D,
+                    t_R,
+                    d,
+                    t_L,
+                    t,
+                    d_variable,
+                    step
+    arr_casa y arr_work serán listas vacías al inicio
+    casa_ps -> parámetros de casa
+    trans_ps -> parámetros de transporte
+    work_ps -> parámetros del trabajo
+    '''
+    casa_D = casa_ps["D"]
+    casa_S = casa_ps["S"]
+    casa_E = casa_ps["E"]
+    casa_I = casa_ps["I"]
+    casa_Q = casa_ps["Q"]
+    casa_R = casa_ps["R"]
+
+    trans_D = trans_ps["D"]
+    trans_S = trans_ps["S"]
+    trans_E = trans_ps["E"]
+    trans_I = trans_ps["I"]
+    trans_Q = trans_ps["Q"]
+    trans_R = trans_ps["R"]
+
+    work_D = work_ps["D"]
+    work_S = work_ps["S"]
+    work_E = work_ps["E"]
+    work_I = work_ps["I"]
+    work_Q = work_ps["Q"]
+    work_R = work_ps["R"]
+
+    d_ncont_hour = {
+                   "s": 0,
+                   "e": 0,
+                   "i": 0,
+                   "q": 0,
+                   "r": 0,
+                   "d": 0
+                   }
+
+
+    # si arr_casa es vacío, significa que es la 1era iteración
+    if not arr_casa:
+        # inicializar el espacio de la casa
+        arr_casa, habs_casa, arr_tiempo = f_init_env(sz_r, sz_c, casa_D,
+                                         casa_S, casa_E, casa_I, casa_Q, casa_R)
+
+
+    # 12 hrs -> casa
+    # corremos una vez para tener valores nuevos para los estados de los habitantes
+    stat_cent = arr_casa[sz_r //2 ][sz_c //2]
+    time_cent = arr_tiempo[sz_r //2 ][sz_c //2]
+    # inicialización de los estados para casa
+    f_habs_stat_N_center(
+                        sz_r,
+                        sz_c,
+                        arr_casa,
+                        habs_casa,
+                        casa_S,
+                        casa_E,
+                        casa_I,
+                        casa_Q,
+                        casa_R,
+                        stat_cent,
+                        time_cent
+                        )
+    ##print(arr_tiempo)  ### DEBUGGIN
+    # actualización de la información
+    d_ncont_hour = f_sum_d_data(d_ncont_hour, arr_casa, habs_casa, arr_tiempo , "casa")
+    l_frames.append(deepcopy(arr_casa))
+
+    ##print(arr_tiempo)  ### DEBUGGIN
+    # para las 11 hrs restantes
+    for j in range(11):
+        f_evolution(sz_r, sz_c, d_params, arr_tiempo, arr_nt, arr_casa, arr_evo)
+        d_ncont_hour = f_sum_d_data(d_ncont_hour, arr_casa, habs_casa, arr_tiempo, "casa")
+        l_frames.append(deepcopy(arr_casa))
+        #print(arr_casa)  ### DEBUGGIN
+
+
+
+    stat_cent = arr_casa[sz_r //2 ][sz_c //2]
+    time_cent = arr_tiempo[sz_r //2 ][sz_c //2]
+    # 2 hrs -> trayecto => evoluciona solo una vez
+    arr_trans, habs_trans, arr_tiempo = f_init_env(sz_r, sz_c, trans_D,
+                                       trans_S, trans_E, trans_I, trans_Q,
+                                       trans_R, stat_cent)
+    # actualización de la información
+    d_ncont_hour = f_sum_d_data(d_ncont_hour, arr_trans, habs_trans, arr_tiempo, "trans1")
+    l_frames.append(deepcopy(arr_trans))
+    # una evolución adicional
+    f_evolution(sz_r, sz_c, d_params, arr_tiempo, arr_nt, arr_trans, arr_evo)
+    # actualización de la información
+    d_ncont_hour = f_sum_d_data(d_ncont_hour, arr_trans, habs_trans, arr_tiempo, "trans1")
+    l_frames.append(deepcopy(arr_trans))
+
+
+
+
+    stat_cent = arr_trans[sz_r //2 ][sz_c //2]
+    time_cent = arr_tiempo[sz_r //2 ][sz_c //2]
+    # si arr_work es vacío, significa que es la 1era iteración
+    if not arr_work:
+        # inicializar el espacio del trabajo
+        arr_work , habs_work, arr_tiempo = f_init_env(sz_r, sz_c, work_D,
+                                          work_S, work_E, work_I, work_Q, work_R,
+                                          stat_cent, time_cent)
+
+    # 8hrs -> trabajo
+    f_habs_stat_N_center(
+                        sz_r,
+                        sz_c,
+                        arr_work,
+                        habs_work,
+                        work_S,
+                        work_E,
+                        work_I,
+                        work_Q,
+                        work_R,
+                        stat_cent,
+                        time_cent
+                        )
+    # actualización de la información
+    d_ncont_hour = f_sum_d_data(d_ncont_hour, arr_work, habs_work, arr_tiempo, "work")
+    l_frames.append(deepcopy(arr_work))
+    for j in range(7):
+        f_evolution(sz_r, sz_c, d_params, arr_tiempo, arr_nt, arr_work, arr_evo)
+        d_ncont_hour = f_sum_d_data(d_ncont_hour, arr_work, habs_work, arr_tiempo, "work")
+        l_frames.append(deepcopy(arr_work))
+
+
+    stat_cent = arr_work[sz_r //2 ][sz_c //2]
+    time_cent = arr_tiempo[sz_r //2 ][sz_c //2]
+    # 2 hrs -> trayecto de regreso
+    arr_trans, habs_trans, arr_tiempo = f_init_env(sz_r, sz_c, trans_D,
+                                       trans_S, trans_E, trans_I, trans_Q, trans_R,
+                                       stat_cent)
+    # actualización de la información
+    d_ncont_hour = f_sum_d_data(d_ncont_hour, arr_trans, habs_trans, arr_tiempo,"trans2")
+    l_frames.append(deepcopy(arr_trans))
+    # una sola evolución
+    f_evolution(sz_r, sz_c, d_params, arr_tiempo, arr_nt, arr_trans, arr_evo)
+    # actualización de la información
+    d_ncont_hour = f_sum_d_data(d_ncont_hour, arr_trans, habs_trans, arr_tiempo, "trans2")
+    l_frames.append(deepcopy(arr_trans))
+
+    # regresar este valor, que ahora correspondera al cambio en un día
+    return d_ncont_hour

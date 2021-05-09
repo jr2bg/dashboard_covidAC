@@ -5,29 +5,34 @@ from dash.dependencies import Input, Output
 from app import app
 from apps import dash_f5a, dash_f5b, dash_f6a, dash_f6b, dash_f6c, dash_ncc
 from apps import dash_ccc, dash_ndc,  dash_cdc, dash_covid19_owid, dash_multDensities #, dash_f6d
+from apps import dash_follow_one
 #from apps import dash_ndc
 
 
 app.layout = html.Div([
     html.H2("Modelación de la complejidad usando estructuras matemáticas discretas"),
-    dcc.Tabs(id='tabs-disertation', value='tab-5a', children=[
-        # dcc.Tab(label='Fig 3a', value='tab-3a'),
-        # dcc.Tab(label='Fig 3b', value='tab-3b'),
-        # #dcc.Tab(label='Fig 4', value='tab-4'),
-        dcc.Tab(label='Fig 5a', value='tab-5a'),
-        dcc.Tab(label='Fig 5b', value='tab-5b'),
-        # dcc.Tab(label='Fig 5c', value='tab-5c'),
-        # dcc.Tab(label='Fig 5d', value='tab-5d'),
-        dcc.Tab(label='Fig 6a', value='tab-6a'),
-        dcc.Tab(label='Fig 6b', value='tab-6b'),
-        dcc.Tab(label='Fig 6c', value='tab-6c'),
-        # # dcc.Tab(label='Fig 6d', value='tab-6d'),
-        dcc.Tab(label='Fig NCC', value='tab-ncc'),
-        dcc.Tab(label='Fig CCC', value='tab-ccc'),
-        dcc.Tab(label='Fig NDC', value='tab-ndc'),
-        dcc.Tab(label='Fig CDC', value='tab-cdc'),
-        dcc.Tab(label='OWID', value='tab-covid19owid'),
-        dcc.Tab(label='multDensities', value='tab-multDensities'),
+    dcc.Tabs(id='tabs-disertation',
+            #value='tab-5a',
+            value= "tab-follow-one",
+            children=[
+                        # dcc.Tab(label='Fig 3a', value='tab-3a'),
+                        # dcc.Tab(label='Fig 3b', value='tab-3b'),
+                        # #dcc.Tab(label='Fig 4', value='tab-4'),
+                        dcc.Tab(label='Fig 5a', value='tab-5a'),
+                        dcc.Tab(label='Fig 5b', value='tab-5b'),
+                        # dcc.Tab(label='Fig 5c', value='tab-5c'),
+                        # dcc.Tab(label='Fig 5d', value='tab-5d'),
+                        dcc.Tab(label='Fig 6a', value='tab-6a'),
+                        dcc.Tab(label='Fig 6b', value='tab-6b'),
+                        dcc.Tab(label='Fig 6c', value='tab-6c'),
+                        # # dcc.Tab(label='Fig 6d', value='tab-6d'),
+                        dcc.Tab(label='Fig NCC', value='tab-ncc'),
+                        dcc.Tab(label='Fig CCC', value='tab-ccc'),
+                        dcc.Tab(label='Fig NDC', value='tab-ndc'),
+                        dcc.Tab(label='Fig CDC', value='tab-cdc'),
+                        dcc.Tab(label='OWID', value='tab-covid19owid'),
+                        dcc.Tab(label='multDensities', value='tab-multDensities'),
+                        dcc.Tab(label='Follow one', value='tab-follow-one'),
     ]),
     html.Div(id='tab-fig')
 ])
@@ -103,7 +108,10 @@ def render_content(tab):
         return html.Div([
             dash_multDensities.layout
         ])
-
+    elif tab == 'tab-follow-one':
+        return html.Div([
+            dash_follow_one.layout
+        ])
 
 
 if __name__ == '__main__':
