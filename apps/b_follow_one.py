@@ -174,6 +174,7 @@ def iterations_follow_one(
                                   )
         # apendeo de la nueva información a d_ncont
         f_d_cont_app(d_ncont_day, d_ncont)
+        #print(d_ncont)
 
 
     # acumulados, hacer copia por que las listas "son punteros"

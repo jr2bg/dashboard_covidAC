@@ -13,7 +13,7 @@ app.layout = html.Div([
     html.H2("Modelación de la complejidad usando estructuras matemáticas discretas"),
     dcc.Tabs(id='tabs-disertation',
             #value='tab-5a',
-            value= "tab-follow-one",
+            value= "tab-covid19owid",
             children=[
                         # dcc.Tab(label='Fig 3a', value='tab-3a'),
                         # dcc.Tab(label='Fig 3b', value='tab-3b'),

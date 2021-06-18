@@ -1,6 +1,7 @@
 
 import apps.utils.basic_rules as rl
 
+from copy import deepcopy
 from math import inf
 
 
@@ -32,6 +33,8 @@ def iterations_covid19owid(
     d_data["% de casos confirmados acumulados"] = []
     d_data["% nuevos casos confirmados"] = []
     time = []
+
+    l_frames = []
 
 
     n_p = D * (2*d + 1)**2
@@ -94,10 +97,13 @@ def iterations_covid19owid(
     time.append(0)
 
 
+    l_frames.append(deepcopy(arr_population))
 
     for c in range(1,n_cycles):
         #print(c)
         rl.f_evolution(sz_r, sz_c, d_params, arr_tiempo, arr_nt, arr_population, arr_evo)
+
+        l_frames.append(deepcopy(arr_population))
 
         d_ncont = rl.data_number_nstates(sz_r, sz_c, n_habs , d_ncont, arr_population, arr_tiempo)
 
@@ -119,4 +125,4 @@ def iterations_covid19owid(
 
     d_data["t"] = time
 
-    return d_data
+    return d_data, l_frames

@@ -7,7 +7,10 @@ from dash.dependencies import Input, Output, State
 
 
 import plotly.graph_objects as go
+import plotly.express as px
 
+from math import inf
+import xarray as xr
 
 ########## ---------- Figura 5 a
 from apps.b_covid19owid import iterations_covid19owid
@@ -209,7 +212,7 @@ layout = html.Div([
                 step=1,
                 value=15,
                 marks={
-                0: {'label': '0', 'style': {'color': '#77b0b1'}},
+                0 : {'label': '0', 'style': {'color': '#77b0b1'}},
                 15: {'label': '15'},
                 21: {'label': '21', 'style': {'color': '#f50'}}
                 },
@@ -221,11 +224,12 @@ layout = html.Div([
             # ###### t_L
             html.Div(id="fcovid19owid-t-L-output", style={"margin-top":20}),
             dcc.Slider(
-                min=0,
+                min=-1,
                 max=21,
                 step=1,
                 value=15,
                 marks={
+                -1: {'label': 'inf', 'style': {'color': '#f50'}},
                 0: {'label': '0', 'style': {'color': '#77b0b1'}},
                 15: {'label': '15'},
                 21: {'label': '21', 'style': {'color': '#f50'}}
@@ -293,6 +297,17 @@ layout = html.Div([
     ###
     html.Button("START", id='fcovid19owid-button-start', n_clicks=0),
     html.Div(id="fcovid19owid-program-status",style={"margin-top":20}),
+
+    #############
+    #######   Animación
+    ############
+    html.Div([
+        dcc.Loading(
+            id="anim-covid19owid-loading-graph",
+            children=html.Div([dcc.Graph(id="anim-covid19owid")]),
+            type="default"
+        )
+    ]),
 
     #############
     #######   GRÁFICA
@@ -441,7 +456,8 @@ def display_value_r(drag_value):
      [Output("fig-ncc-covid19owid", "figure"),
      Output("fig-ccc-covid19owid", "figure"),
      Output("fig-ndc-covid19owid", "figure"),
-     Output("fig-cdc-covid19owid", "figure")],
+     Output("fig-cdc-covid19owid", "figure"),
+     Output("anim-covid19owid", "figure")],
     [Input('fcovid19owid-button-start', 'n_clicks')],
     [State('fcovid19owid-sz-r','value'),
      State('fcovid19owid-sz-c','value'),
@@ -490,11 +506,12 @@ def display_values_tot(btn_start,
     print("p_Q: %f" %(p_Q))
     print("t_Q: %d" %(t_Q))
     print("p_D: %d" %(cfr))
+    if t_L < 0: t_L = inf;
     print('t_L: %f' %(t_L))
     print("t_R: %d" %(t_R))
     print("E_in: %d" %(E_in))
     print("I_in: %d" %(I_in))
-    df = iterations_covid19owid(
+    df, l_frames = iterations_covid19owid(
                sz_r,
                sz_c,
                d,
@@ -549,5 +566,21 @@ def display_values_tot(btn_start,
                       yaxis_title="% acumulado muertes confirmadas")
 
 
+    # frames para la animación
+    frames = xr.DataArray(l_frames,
+                          dims=("tiempo", "row", "col"),
+                          coords={"tiempo":[t for t in range(n_cycles)]}
+                          )
 
-    return fig_ncc, fig_ccc, fig_ndc, fig_cdc
+    fig_animation=px.imshow(frames,
+                            animation_frame="tiempo",
+                            #labels={"x":None, "y":None, "color":None},
+                            range_color=[0,5],
+                            #width=1400,
+                            height=800,
+                            aspect="equal",
+                            #x=None,
+                            #y=None
+                            )
+
+    return fig_ncc, fig_ccc, fig_ndc, fig_cdc, fig_animation
