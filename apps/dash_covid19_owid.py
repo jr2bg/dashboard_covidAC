@@ -9,11 +9,14 @@ from dash.dependencies import Input, Output, State
 import plotly.graph_objects as go
 import plotly.express as px
 
+
 from math import inf
 import xarray as xr
 
 ########## ---------- Figura 5 a
 from apps.b_covid19owid import iterations_covid19owid
+
+import apps.utils.save_data as sd
 
 from app import app
 
@@ -39,10 +42,12 @@ layout = html.Div([
                 min=25,
                 max=400,
                 step=25,
-                value=200,
+                value=100,
                 marks={
                 25: {'label': '25', 'style': {'color': '#77b0b1'}},
+                100: {'label': '100'},
                 200: {'label': '200'},
+                300: {'label': '300'},
                 400: {'label': '400', 'style': {'color': '#f50'}}
                 },
                 id="fcovid19owid-sz-r",
@@ -53,10 +58,12 @@ layout = html.Div([
                 min=25,
                 max=400,
                 step=25,
-                value=200,
+                value=100,
                 marks={
                 25: {'label': '25', 'style': {'color': '#77b0b1'}},
+                100: {'label': '100'},
                 200: {'label': '200'},
+                300: {'label': '300'},
                 400: {'label': '400', 'style': {'color': '#f50'}}
                 },
                 id="fcovid19owid-sz-c",
@@ -91,7 +98,9 @@ layout = html.Div([
                 value=0.5,
                 marks={
                 0: {'label': '0', 'style': {'color': '#77b0b1'}},
+                0.25: {'label': '0.25'},
                 0.5: {'label': '0.5'},
+                0.75: {'label': '0.75'},
                 1: {'label': '1', 'style': {'color': '#f50'}}
                 },
                 id="fcovid19owid-D",
@@ -103,14 +112,22 @@ layout = html.Div([
             html.Div(id="fcovid19owid-n-cycles-output", style={"margin-top":20}),
             dcc.Slider(
                 min=0,
-                max=200,
+                max=1000,
                 step=1,
-                value=100,
+                value=10,
                 marks={
                 0: {'label': '0', 'style': {'color': '#77b0b1'}},
+                10: {'label': '10'},
+                1000: {'label': '1000', 'style': {'color': '#f50'}},
                 100: {'label': '100'},
-                200: {'label': '200', 'style': {'color': '#f50'}}
-                },
+                200: {'label': '200'},
+                300: {'label': '300'},
+                400: {'label': '400'},
+                500: {'label': '500'},
+                600: {'label': '600'},
+                700: {'label': '700'},
+                800: {'label': '800'},
+                900: {'label': '900'}},
                 id="fcovid19owid-n-cycles",
             ),
 
@@ -227,7 +244,7 @@ layout = html.Div([
                 min=-1,
                 max=21,
                 step=1,
-                value=15,
+                value=-1,
                 marks={
                 -1: {'label': 'inf', 'style': {'color': '#f50'}},
                 0: {'label': '0', 'style': {'color': '#77b0b1'}},
@@ -571,16 +588,62 @@ def display_values_tot(btn_start,
                           dims=("tiempo", "row", "col"),
                           coords={"tiempo":[t for t in range(n_cycles)]}
                           )
-
+    colors =  ["#000000",
+               "#FFFFFF",
+               "#0000FF",
+               "#FFFFFF",
+               "#FF00FF",
+               "#FFFFFF",
+               "#FF0000",
+               "#FFFFFF",
+               "#00FF00",
+               "#FFFFFF",
+               "#FFFF00",
+               "#FFFFFF",
+               "#800080"]
     fig_animation=px.imshow(frames,
                             animation_frame="tiempo",
                             #labels={"x":None, "y":None, "color":None},
-                            range_color=[0,5],
+                            range_color=[0,6],
                             #width=1400,
                             height=800,
                             aspect="equal",
+                            #color_continuous_scale = "Rainbow"
+                            color_continuous_scale = colors
                             #x=None,
                             #y=None
                             )
+    ##################
+    ########### ALMACENAMIENTO DE LA INFO
+    #################
+    inpt_params = {
+                    "numero_columnas":sz_r,
+                    "numero_filas":sz_c,
+                    "radio_vecindad_Moore":d,
+                    "densidad":D,
+                    "numero_ciclos":n_cycles,
+                    "numero_infeccion_basico":R_0,
+                    "tiempo_puede_infectar":t_infec,
+                    "tiempo_incubacion":t_I,
+                    "probabilidad_entrar_cuarentena":p_Q,
+                    "tiempo_minimo_previo_cuarentena":t_Q,
+                    "case-fatality_risk":cfr,
+                    "tiempo_hasta_lockdown":t_L,
+                    "tiempo_previo_r":t_R,
+                    "numero_expuestos_inicial":E_in,
+                    "numero_infectados_inicial":I_in,
+                    }
+    # creacion del folder necesario
+    folder, date_info = sd.create_folder()
+    print("|------- DIRECTORIO CREADO -------|")
+    # guardado de los parámetros
+    sd.save_info_txt(inpt_params, folder, date_info)
+    print("|------- PARÁMETROS GUARDADO -------|")
+    # creacion del video
+    sd.mk_video(l_frames, folder)
+    print("|------- VIDEO GUARDADO -------|")
+    # creación del csv + plots
+    sd.generate_plots_csv(df, folder)
+    print("|------- GRÁFICAS GUARDADAS -------|")
 
     return fig_ncc, fig_ccc, fig_ndc, fig_cdc, fig_animation

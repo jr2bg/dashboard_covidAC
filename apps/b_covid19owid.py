@@ -104,6 +104,7 @@ def iterations_covid19owid(
         rl.f_evolution(sz_r, sz_c, d_params, arr_tiempo, arr_nt, arr_population, arr_evo)
 
         l_frames.append(deepcopy(arr_population))
+        #l_frames.append([list(map(str,lst)) for lst in arr_population])
 
         d_ncont = rl.data_number_nstates(sz_r, sz_c, n_habs , d_ncont, arr_population, arr_tiempo)
 
