@@ -50,7 +50,7 @@ def s_2_e(p_E, npa, ng, arr_population):
 def e_2_i(l_p_I, npa, t_I, t):
     '''
     función que determina si la celda pasa de Expuesto (2) a Infectado (3)
-    p_I -> probabilidad de pasar a infectado
+    l_p_I -> lista con el acumulado de probabilidad de pasar a infectado
     npa -> número pseudo aleatorio
     t_I -> tiempo mínimo de permanencia en expuesto
     t -> tiempo que la celda ha pasado en Expuesto
@@ -374,8 +374,8 @@ def f_p_I(s= 0.465, loc = 0, scale = 5.5, fst_q = 0.0001, lst_q = 0.9999 ,step =
 
     # np array con 100 entradas que van desde st hasta nd
     x_cont = np.linspace(st,nd,100)
-    # pdf de la función lognormal con los parámetros especificados
-    lognm_pdf = lognorm.pdf(x_cont,s, loc, scale)
+    # cdf es la función de distribución acumulada
+    lognm_pdf = lognorm.cdf(x_cont,s, loc, scale)
 
     # convertimos a una lista de enteros con índices los días y
     # las entradas los valores de la probabilidad
@@ -400,6 +400,7 @@ def f_p_I(s= 0.465, loc = 0, scale = 5.5, fst_q = 0.0001, lst_q = 0.9999 ,step =
 
     # la última prob se debe anexar al terminar de ejecutarse el código
     prob_step.append(sm / cont)
+    prob_step[-1] = 1
 
     return prob_step
 
