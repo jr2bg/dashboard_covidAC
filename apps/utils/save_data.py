@@ -44,11 +44,15 @@ def mk_video(l_frames, folder):
                "#FFFF00",
                "#800080"])
     fig = plt.figure(dpi = 200, tight_layout = False, constrained_layout = True)
+    #fig, ax = plt.subplots(dpi = 200, tight_layout = False, constrained_layout = True)
     plots = []
     for i in range(len(l_frames)):
         plt.axis("off")
+        #ax.set_axis_off()
+        #img = ax.imshow(l_frames[i], vmin = 0, vmax = 6, cmap = cmap)
         img = plt.imshow(l_frames[i], vmin = 0, vmax = 6, cmap = cmap)
         plots.append([img])
+        #ax.clear()
     # # generar la animación
     ani = animation.ArtistAnimation(fig, plots, interval=100, blit=True,
                                     repeat_delay=1000)
@@ -81,4 +85,25 @@ def generate_plots_csv(d_data, folder):
         fig, ax = plt.subplots()
         ax.plot(df["t"], df[name])
         ax.set(xlabel = "tiempo (d)", ylabel = name)
-        plt.savefig(os.path.join(folder, name+".jpg"))
+        plt.savefig(os.path.join(folder, name+".jpg"), bbox_inches = 'tight')
+
+
+def mk_video2(l_frames, folder):
+    FFMpegW = animation.writers["ffmpeg"]
+    d_data_vid = dict(title= "evolucion", artist="B190368", comment="evolucion del sistema")
+    cmap = ListedColormap(["#000000",
+               "#0000FF",
+               "#FF00FF",
+               "#FF0000",
+               "#00FF00",
+               "#FFFF00",
+               "#800080"])
+    writer = FFMpegW(fps=15, metadata=d_data_vid)
+
+    fig, ax = plt.subplots()
+    n_t = len(l_frames)
+
+    with writer.saving(fig, os.path.join(folder, "videoEvolution.mp4"), n_t):
+        for i in range(n_t):
+            ax.imshow(l_frames[i], vmin = 0, vmax = 6, cmap = cmap)
+            writer.grab_frame()

@@ -113,7 +113,7 @@ layout = html.Div([
             dcc.Slider(
                 min=0,
                 max=1000,
-                step=1,
+                step=10,
                 value=10,
                 marks={
                 0: {'label': '0', 'style': {'color': '#77b0b1'}},
@@ -638,7 +638,7 @@ def display_values_tot(btn_start,
     print("|------- DIRECTORIO CREADO -------|")
     # guardado de los parámetros
     sd.save_info_txt(inpt_params, folder, date_info)
-    print("|------- PARÁMETROS GUARDADO -------|")
+    print("|------- PARÁMETROS GUARDADOS -------|")
     # creacion del video
     sd.mk_video(l_frames, folder)
     print("|------- VIDEO GUARDADO -------|")

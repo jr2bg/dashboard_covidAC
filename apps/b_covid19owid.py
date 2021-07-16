@@ -47,7 +47,7 @@ def iterations_covid19owid(
     l_p_I = rl.f_p_I()
 
 
-    d_variable = True
+    d_variable = False
 
     d_params = {"p_E" :  p_E,
                 "p_I" :  l_p_I,         # pasamos toda la lista
