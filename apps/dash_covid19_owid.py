@@ -277,13 +277,13 @@ layout = html.Div([
             html.Div(id="fcovid19owid-E-in-output", style={"margin-top":20}),
             dcc.Slider(
                 min=75,
-                max=375,
+                max=600,
                 step=25,
                 value=200,
                 marks={
                 75: {'label': '75', 'style': {'color': '#77b0b1'}},
                 200: {'label': '200'},
-                375: {'label': '375', 'style': {'color': '#f50'}}
+                600: {'label': '600', 'style': {'color': '#f50'}}
                 },
                 id="fcovid19owid-E-in",
             ),
@@ -294,13 +294,13 @@ layout = html.Div([
             html.Div(id="fcovid19owid-I-in-output", style={"margin-top":20}),
             dcc.Slider(
                 min=5,
-                max=25,
+                max=50,
                 step=1,
-                value=6,
+                value=10,
                 marks={
                 5: {'label': '5', 'style': {'color': '#77b0b1'}},
-                6: {'label': '6'},
-                25: {'label': '25', 'style': {'color': '#f50'}}
+                10: {'label': '10'},
+                50: {'label': '50', 'style': {'color': '#f50'}}
                 },
                 id="fcovid19owid-I-in",
             ),
